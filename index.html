@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Virginia Gun Law Checker — 2026</title>
+<title>Virginia Gun Law Checker — 2026 | Schneider &amp; Williams, P.C.</title>
+<meta name="description" content="Find out what Virginia's 2026 firearm laws mean for your specific situation. Free tool from Schneider &amp; Williams, P.C." />
+<meta property="og:title" content="Virginia Gun Law Checker — 2026" />
+<meta property="og:description" content="Answer a few questions to find out what Virginia's new 2026 firearm laws mean for your situation. Free public service from Schneider &amp; Williams, P.C." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Schneider &amp; Williams, P.C." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Virginia Gun Law Checker — 2026" />
+<meta name="twitter:description" content="Find out what Virginia's 2026 firearm laws mean for your situation. Free tool from Schneider &amp; Williams, P.C." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -682,6 +690,78 @@ details.legal-details .legal-inner { padding: 18px 18px 20px; }
   .result-verdict { font-size: 26px; }
   .result-emoji { font-size: 42px; }
 }
+
+/* ── SITE NAV ── */
+.site-nav { border-top: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.20); }
+.nav-inner { max-width: 700px; margin: 0 auto; padding: 0 20px; display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-link { color: rgba(255,255,255,0.58); font-size: 11px; font-weight: 800; text-decoration: none; padding: 10px 14px; white-space: nowrap; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 2px solid transparent; transition: color 0.12s, border-color 0.12s; display: inline-block; }
+.nav-link:hover { color: rgba(255,255,255,0.90); }
+.nav-link.active { color: #fff; border-bottom-color: rgba(255,255,255,0.75); }
+
+/* ── SHARE ROW ── */
+.share-section { margin-top: 18px; }
+.share-label { font-size: 11px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.share-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; border: none; font-family: var(--font); transition: opacity 0.12s; white-space: nowrap; }
+.share-btn:hover { opacity: 0.82; }
+.share-x { background: #000; color: #fff; }
+.share-fb { background: #1877f2; color: #fff; }
+.share-native { background: var(--navy); color: #fff; }
+.share-copy { background: var(--ground); color: var(--ink); border: 1.5px solid var(--border); }
+.share-print { background: var(--ground); color: var(--ink); border: 1.5px solid var(--border); }
+
+/* ── COUNTY ENFORCEMENT ── */
+.county-section { margin-top: 16px; background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-sm); overflow: hidden; }
+.county-header { padding: 12px 20px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.county-header-title { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--navy); text-transform: uppercase; flex: 1; }
+.county-body { padding: 14px 20px 16px; }
+.county-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-family: var(--font); font-size: 15px; color: var(--ink); background: var(--ground); margin-bottom: 12px; }
+.county-select:focus { outline: none; border-color: var(--navy); }
+.county-verdict { font-size: 14px; line-height: 1.6; padding: 12px 14px; border-radius: var(--r-sm); display: none; }
+.county-verdict.visible { display: block; }
+.county-clear { background: var(--ok-bg); color: var(--ok-dark); border-left: 4px solid var(--ok); }
+.county-blocked { background: var(--warn-bg); color: var(--warn-dark); border-left: 4px solid var(--warn-dark); }
+.county-active { background: var(--no-bg); color: var(--no-dark); border-left: 4px solid var(--no-dark); }
+.county-pending { background: var(--grey-bg); color: var(--grey); border-left: 4px solid var(--grey); }
+
+/* ── LEAD CAPTURE ── */
+.lead-capture { margin-top: 20px; background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh); overflow: hidden; }
+.lead-header { padding: 18px 24px 14px; border-bottom: 1px solid var(--border); }
+.lead-header h3 { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: 0.07em; color: var(--navy); margin-bottom: 4px; }
+.lead-header p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.lead-form-inner { padding: 18px 24px 20px; display: flex; flex-direction: column; gap: 12px; }
+.lead-row { display: flex; gap: 10px; }
+.lead-field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.lead-field label { font-size: 11px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.lead-field input, .lead-field select { padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-family: var(--font); font-size: 14px; color: var(--ink); background: var(--ground); transition: border-color 0.12s; width: 100%; }
+.lead-field input:focus, .lead-field select:focus { outline: none; border-color: var(--navy); }
+.lead-check-row { display: flex; align-items: flex-start; gap: 10px; }
+.lead-check-row input[type=checkbox] { margin-top: 3px; width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--navy); cursor: pointer; }
+.lead-check-label { font-size: 14px; color: var(--ink); line-height: 1.45; cursor: pointer; }
+.lead-check-label strong { display: block; font-weight: 800; margin-bottom: 1px; }
+.lead-check-label span { color: var(--muted); font-size: 13px; }
+.lead-submit-btn { background: var(--navy); color: #fff; border: none; padding: 12px 26px; border-radius: var(--r-sm); font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.12s; align-self: flex-start; }
+.lead-submit-btn:hover { background: #0d2347; }
+.lead-success { padding: 22px 24px; text-align: center; }
+.lead-success-icon { font-size: 32px; margin-bottom: 8px; }
+.lead-success-msg { font-size: 15px; font-weight: 700; color: var(--ok-dark); }
+.lead-success-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.lead-disclaimer { font-size: 12px; color: var(--muted); padding: 0 24px 16px; line-height: 1.5; }
+
+@media (max-width: 520px) {
+  .lead-row { flex-direction: column; }
+  .share-row { gap: 6px; }
+}
+
+/* ── PRINT ── */
+@media print {
+  .site-nav, .back-btn, .result-actions, .share-section, .lead-capture, .county-section, .profile-summary, .notice, .progress-wrap, .breadcrumb { display: none !important; }
+  body { background: #fff; font-size: 14px; }
+  .result-card { box-shadow: none; border: 1px solid #ddd; }
+  .page-wrap { padding: 10px 0; }
+  .site-header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
 </style>
 </head>
 <body>
@@ -697,7 +777,27 @@ details.legal-details .legal-inner { padding: 18px 18px 20px; }
       <a href="https://www.swvalawfirm.com">swvalawfirm.com</a>
     </div>
   </div>
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-link active">Step-by-Step Checker</a>
+      <a href="tree.html" class="nav-link">Decision Reference</a>
+      <a href="faq.html" class="nav-link">FAQs</a>
+      <a href="sources.html" class="nav-link">Sources &amp; Citations</a>
+      <a href="contact.html" class="nav-link">Contact Us</a>
+    </div>
+  </nav>
 </div>
+
+<!-- Static form for Netlify form discovery at deploy time -->
+<form name="gun-checker-lead" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="bot-field" />
+  <input name="name" type="text" />
+  <input name="email" type="email" />
+  <input name="county" type="text" />
+  <input name="wants_consult" type="checkbox" />
+  <input name="result_rule_id" type="hidden" />
+  <input name="result_summary" type="hidden" />
+</form>
 
 <div class="page-wrap">
 
@@ -1514,7 +1614,159 @@ function renderMag() {
   );
 }
 
+/* ── URL PERMALINK ENCODING ── */
+function encodeState() {
+  if (state.step !== STEPS.RESULT) return;
+  const p = {};
+  if (state.age) p.a = state.age;
+  if (state.timing) p.t = state.timing;
+  if (state.action) p.x = state.action;
+  if (state.recipient) p.r = state.recipient;
+  if (state.transportContext) p.tc = state.transportContext;
+  if (state.magAction) p.m = state.magAction;
+  if (Object.keys(p).length) {
+    try { history.replaceState(null, '', '#' + new URLSearchParams(p).toString()); } catch(e) {}
+  }
+}
+function tryRestoreFromHash() {
+  const hash = location.hash.replace(/^#/, '');
+  if (!hash) return false;
+  try {
+    const p = new URLSearchParams(hash);
+    const action = p.get('x'), timing = p.get('t'), age = p.get('a');
+    if (!action || !timing || !age) return false;
+    state.age = age; state.timing = timing; state.action = action;
+    state.recipient = p.get('r') || null;
+    state.transportContext = p.get('tc') || null;
+    state.magAction = p.get('m') || null;
+    state.step = STEPS.RESULT;
+    return true;
+  } catch(e) { return false; }
+}
+
+/* ── COUNTY ENFORCEMENT SELECTOR ── */
+function buildCountySelector() {
+  const wrap = div("county-section");
+  const hdr = div("county-header");
+  hdr.innerHTML = '<span class="county-header-title">Check Enforcement in Your County</span>';
+  wrap.appendChild(hdr);
+  const body = div("county-body");
+  const sel = el("select", {className:"county-select"});
+  sel.innerHTML = '<option value="">Select your county or city…</option>' +
+    '<option value="lancaster">Lancaster County — VSP blocked through Dec 31, 2026</option>' +
+    '<option value="washington">Washington County — VSP + prosecutors blocked through Jul 1, 2027</option>' +
+    '<option value="spotsylvania">Spotsylvania County — Law in effect (injunction denied)</option>' +
+    '<option value="fauquier">Fauquier County — Court case pending</option>' +
+    '<option value="other">All other Virginia counties and cities</option>';
+  const verdict = div("county-verdict");
+  sel.addEventListener("change", function() {
+    const v = sel.value;
+    verdict.innerHTML = "";
+    verdict.className = "county-verdict";
+    if (!v) return;
+    const msgs = {
+      lancaster: ['county-blocked', '<strong>Enforcement currently blocked here.</strong> A Lancaster County Circuit Court injunction in <em>Crump v. Katz</em> blocks VSP from enforcing through December 31, 2026. Local prosecutors not named in the case may still act independently.'],
+      washington: ['county-blocked', '<strong>Enforcement currently blocked here.</strong> A Washington County Circuit Court injunction in <em>Santolla v. Katz</em> blocks both VSP and several named Commonwealth’s Attorneys through July 1, 2027.'],
+      spotsylvania: ['county-active', '<strong>Law is in effect here.</strong> A Spotsylvania court denied an injunction (<em>Curtis v. Katz</em>, June 18, 2026). The law is being enforced normally.'],
+      fauquier: ['county-pending', '<strong>Court case pending.</strong> <em>Black v. Hook</em> is pending in Fauquier County — no ruling yet. Assume the law is enforceable until a court says otherwise.'],
+      other: ['county-clear', '<strong>No active injunction covers your area.</strong> VSP may enforce the law in your jurisdiction. The U.S. Supreme Court took up related Second Amendment cases (cert granted June 30, 2026) with a decision expected spring 2027 — but until then, the law is in effect.']
+    };
+    const [cls, html] = msgs[v] || msgs.other;
+    verdict.className = "county-verdict " + cls + " visible";
+    verdict.innerHTML = html;
+  });
+  body.appendChild(sel);
+  body.appendChild(verdict);
+  wrap.appendChild(body);
+  return wrap;
+}
+
+/* ── SHARE ROW ── */
+function buildShareRow(rule) {
+  const url = window.location.href;
+  const shareText = 'Virginia’s 2026 firearm law — ' + rule.status.toLowerCase() + ' for my situation. See what the law means for you:';
+  const section = div("share-section");
+  const label = div("share-label", "Share your result");
+  const row = div("share-row");
+  row.appendChild(el("a", {className:"share-btn share-x", href:"https://twitter.com/intent/tweet?text="+encodeURIComponent(shareText)+"&url="+encodeURIComponent(url), target:"_blank", rel:"noopener noreferrer"}, "Post on X"));
+  row.appendChild(el("a", {className:"share-btn share-fb", href:"https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url), target:"_blank", rel:"noopener noreferrer"}, "Share on Facebook"));
+  const copyBtn = el("button", {className:"share-btn share-copy"}, "Copy Link");
+  copyBtn.onclick = function() {
+    navigator.clipboard.writeText(url).then(function() {
+      copyBtn.textContent = "Copied!";
+      setTimeout(function() { copyBtn.textContent = "Copy Link"; }, 2000);
+    });
+  };
+  row.appendChild(copyBtn);
+  row.appendChild(el("button", {className:"share-btn share-print", onclick:function(){window.print();}}, "Print / Save PDF"));
+  if (typeof navigator.share === "function") {
+    const natBtn = el("button", {className:"share-btn share-native"}, "Share…");
+    natBtn.onclick = function() { navigator.share({title:"Virginia Gun Law Checker — 2026", text:rule.plainSummary, url:url}); };
+    row.appendChild(natBtn);
+  }
+  section.appendChild(label);
+  section.appendChild(row);
+  return section;
+}
+
+/* ── INLINE LEAD CAPTURE ── */
+function buildLeadCapture(ruleId, ruleSummary) {
+  const wrap = div("lead-capture");
+  const hdr = div("lead-header");
+  hdr.innerHTML = '<h3>Stay Updated on Virginia Law</h3><p>Court rulings on this law are changing fast. Enter your email and we’ll let you know if anything that affects your situation changes.</p>';
+  wrap.appendChild(hdr);
+  const form = document.createElement("form");
+  form.className = "lead-form-inner";
+  form.setAttribute("name","gun-checker-lead");
+  form.setAttribute("method","POST");
+  form.setAttribute("data-netlify","true");
+  form.setAttribute("netlify-honeypot","bot-field");
+  const botP = document.createElement("p");
+  botP.style.display="none";
+  botP.innerHTML='<label>Do not fill: <input name="bot-field" /></label>';
+  form.appendChild(botP);
+  function hidden(n,v){const i=document.createElement("input");i.type="hidden";i.name=n;i.value=v;return i;}
+  form.appendChild(hidden("form-name","gun-checker-lead"));
+  form.appendChild(hidden("result_rule_id",ruleId));
+  form.appendChild(hidden("result_summary",ruleSummary));
+  const nameEmailRow = div("lead-row");
+  const nf = div("lead-field");
+  nf.innerHTML='<label for="lc-name">Name</label>';
+  nf.appendChild(el("input",{id:"lc-name",name:"name",type:"text",placeholder:"Your name"}));
+  const ef = div("lead-field");
+  ef.innerHTML='<label for="lc-email">Email *</label>';
+  ef.appendChild(el("input",{id:"lc-email",name:"email",type:"email",placeholder:"you@example.com",required:true}));
+  nameEmailRow.appendChild(nf); nameEmailRow.appendChild(ef);
+  form.appendChild(nameEmailRow);
+  const consultRow = div("lead-check-row");
+  const consultChk = document.createElement("input");
+  consultChk.type="checkbox"; consultChk.id="lc-consult"; consultChk.name="wants_consult"; consultChk.value="yes";
+  const consultLbl = el("label",{htmlFor:"lc-consult",className:"lead-check-label"});
+  consultLbl.innerHTML='<strong>I’d like to speak with an attorney about my situation</strong><span>A member of Schneider &amp; Williams, P.C. will follow up with you.</span>';
+  consultRow.appendChild(consultChk); consultRow.appendChild(consultLbl);
+  form.appendChild(consultRow);
+  form.appendChild(el("button",{type:"submit",className:"lead-submit-btn"},"Submit"));
+  form.addEventListener("submit",function(e){
+    e.preventDefault();
+    const data = new FormData(form);
+    fetch("/",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(data).toString()})
+      .then(function(){
+        const consult=consultChk.checked;
+        wrap.innerHTML='<div class="lead-success"><div class="lead-success-icon">'+(consult?'📞':'✓')+'</div><div class="lead-success-msg">'+(consult?'We’ll be in touch.':'You’re on the list.')+'</div><div class="lead-success-sub">'+(consult?'An attorney from Schneider &amp; Williams will contact you shortly.':'We’ll notify you if anything that affects your situation changes.')+'</div></div>';
+      })
+      .catch(function(){
+        wrap.innerHTML='<div class="lead-success"><div class="lead-success-msg" style="color:var(--no-dark)">Something went wrong.</div><div class="lead-success-sub">Call us directly at <a href="tel:2766942455">276-694-2455</a>.</div></div>';
+      });
+  });
+  wrap.appendChild(form);
+  const disc = div("lead-disclaimer");
+  disc.textContent="Submitting this form does not create an attorney-client relationship. For legal advice specific to your situation, please schedule a consultation.";
+  wrap.appendChild(disc);
+  return wrap;
+}
+
 function renderResult() {
+  encodeState();
   if (state.action==="__not_covered") return renderResultCard(RULES["not_covered"]);
   const ruleId = resolveRule({action:state.action,timing:state.timing,age:state.age,recipient:state.recipient,transportContext:state.transportContext,magAction:state.magAction});
   return renderResultCard(RULES[ruleId] || RULES["not_covered"]);
@@ -1596,12 +1848,18 @@ function renderResultCard(rule) {
     (resolveRule({action:state.action,timing:state.timing,age:state.age,recipient:state.recipient,transportContext:state.transportContext,magAction:state.magAction}));
 
   const profileSummary = (state.age && state.timing) ? renderProfileSummary(currentRuleId) : null;
+  const shareSection = buildShareRow(rule);
+  const countySelector = buildCountySelector();
+  const leadCapture = buildLeadCapture(currentRuleId, rule.plainSummary);
 
   return div("",
     makeProgress(100, "Result"),
     bcItems.length > 1 ? makeBreadcrumb(bcItems) : null,
     div("result-card", header, body),
-    profileSummary
+    shareSection,
+    countySelector,
+    profileSummary,
+    leadCapture
   );
 }
 
@@ -1759,6 +2017,7 @@ function render() {
   }
 }
 
+tryRestoreFromHash();
 render();
 </script>
 </body>

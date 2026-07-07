@@ -68,6 +68,12 @@ body {
   padding: 32px 24px 28px;
   text-align: center;
 }
+.site-nav { border-top: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.20); }
+.nav-inner { max-width: 920px; margin: 0 auto; padding: 0 20px; display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-link { color: rgba(255,255,255,0.58); font-size: 11px; font-weight: 800; text-decoration: none; padding: 10px 14px; white-space: nowrap; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 2px solid transparent; transition: color 0.12s, border-color 0.12s; display: inline-block; }
+.nav-link:hover { color: rgba(255,255,255,0.90); }
+.nav-link.active { color: #fff; border-bottom-color: rgba(255,255,255,0.75); }
 .header-back {
   display: inline-flex;
   align-items: center;
@@ -289,9 +295,8 @@ body {
 
 <div class="site-header">
   <div class="header-inner">
-    <a href="index.html" class="header-back">← Back to the Step-by-Step Checker</a>
     <div class="header-badge">Commonwealth of Virginia &mdash; 2026 Firearm Laws</div>
-    <h1>Virginia Assault Firearm Law — Complete Decision Reference</h1>
+    <h1>Virginia Firearm Law — Complete Decision Reference</h1>
     <p class="header-sub">Every scenario. Every outcome. Use this page to see how the 2026 law applies across all situations — no clicking required.</p>
     <div class="header-firm">
       A public service of <strong>Schneider &amp; Williams, P.C.</strong> &nbsp;&middot;&nbsp;
@@ -299,6 +304,15 @@ body {
       <a href="https://www.swvalawfirm.com">swvalawfirm.com</a>
     </div>
   </div>
+  <nav class="site-nav" aria-label="Site navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-link">Step-by-Step Checker</a>
+      <a href="tree.html" class="nav-link active">Decision Reference</a>
+      <a href="faq.html" class="nav-link">FAQs</a>
+      <a href="sources.html" class="nav-link">Sources &amp; Citations</a>
+      <a href="contact.html" class="nav-link">Contact Us</a>
+    </div>
+  </nav>
 </div>
 
 <div class="page-wrap">
