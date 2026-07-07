@@ -534,6 +534,98 @@ details.legal-details .legal-inner { padding: 18px 18px 20px; }
   border-top: 2px solid var(--border); padding-top: 18px; margin-top: 4px;
 }
 .result-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* ── PROFILE SUMMARY ── */
+.profile-summary {
+  margin-top: 20px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.ps-header {
+  padding: 18px 24px 16px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.ps-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--navy);
+  flex: 1;
+}
+.ps-tree-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 5px 12px;
+  white-space: nowrap;
+  transition: border-color 0.12s, color 0.12s;
+}
+.ps-tree-link:hover { border-color: var(--navy); color: var(--navy); }
+.ps-profile-tag {
+  width: 100%;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.ps-profile-tag strong { color: var(--ink); }
+.ps-group-label {
+  padding: 8px 24px 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--ground);
+  border-top: 1px solid var(--border);
+}
+.ps-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.ps-row:last-child { border-bottom: none; }
+.ps-row-active { background: var(--ground); }
+.ps-scenario { flex: 1; color: var(--ink); font-weight: 600; line-height: 1.35; }
+.ps-scenario-detail { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 1px; }
+.ps-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ps-badge-Permitted   { background: var(--ok-bg);   color: var(--ok-dark);   border: 1px solid var(--ok); }
+.ps-badge-Prohibited  { background: var(--no-bg);   color: var(--no-dark);   border: 1px solid var(--no-dark); }
+.ps-badge-Conditional { background: var(--warn-bg); color: var(--warn-dark); border: 1px solid var(--warn-dark); }
+.ps-badge-Unsettled   { background: var(--grey-bg); color: var(--grey);      border: 1px solid var(--grey); }
+.ps-you-marker {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--navy);
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid var(--navy);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
 .action-btn {
   background: var(--navy); color: #fff;
   border: none; padding: 13px 26px; border-radius: var(--r-sm);
@@ -1490,7 +1582,9 @@ function renderResultCard(rule) {
 
   const actions = div("result-actions");
   const restartBtn = el("button",{className:"action-btn",onclick:resetState},"Start Over");
+  const treeBtn = el("a",{className:"action-btn-secondary",href:"tree.html"},"Full Decision Reference →");
   actions.appendChild(restartBtn);
+  actions.appendChild(treeBtn);
   body.appendChild(actions);
 
   const bcItems = ["Covered firearm"];
@@ -1498,10 +1592,16 @@ function renderResultCard(rule) {
   if (state.timing) bcItems.push(timingLabel());
   if (state.action && state.action!=="__not_covered") bcItems.push(actionLabel());
 
+  const currentRuleId = state.action==="__not_covered" ? "not_covered" :
+    (resolveRule({action:state.action,timing:state.timing,age:state.age,recipient:state.recipient,transportContext:state.transportContext,magAction:state.magAction}));
+
+  const profileSummary = (state.age && state.timing) ? renderProfileSummary(currentRuleId) : null;
+
   return div("",
     makeProgress(100, "Result"),
     bcItems.length > 1 ? makeBreadcrumb(bcItems) : null,
-    div("result-card", header, body)
+    div("result-card", header, body),
+    profileSummary
   );
 }
 
@@ -1510,6 +1610,127 @@ function timingLabel() { return state.timing==="pre"?"Grandfathered":"Post-July 
 function actionLabel() {
   const m={keep:"Keep",gift:"Gift",sell:"Sell",inherit:"Inherit",bequeath:"Bequeath",transport:"Transport",outofstate:"Out of State",bring_into_va:"Bring into VA",mag_transfer:"Magazine",surrender:"Surrender",bequeath_or_inherit:"Inherit/Bequeath"};
   return m[state.action]||state.action;
+}
+
+function renderProfileSummary(currentRuleId) {
+  const { age, timing } = state;
+  if (!age || !timing) return null;
+
+  const statusLabel = { Permitted:"Permitted", Prohibited:"Prohibited", Conditional:"Conditional", Unsettled:"Unsettled" };
+  const ageText = age==="under18"?"Under 18":age==="1820"?"Age 18–20":"Age 21+";
+  const timingText = timing==="pre"?"owned before July 1, 2026":"acquired after July 1, 2026";
+
+  function row(scenario, detail, ruleId) {
+    const rule = RULES[ruleId] || RULES["not_covered"];
+    const isActive = ruleId === currentRuleId;
+    const r = document.createElement("div");
+    r.className = "ps-row" + (isActive ? " ps-row-active" : "");
+    const scEl = document.createElement("div");
+    scEl.className = "ps-scenario";
+    scEl.textContent = scenario;
+    if (detail) {
+      const d = document.createElement("span");
+      d.className = "ps-scenario-detail";
+      d.textContent = detail;
+      scEl.appendChild(d);
+    }
+    const badge = document.createElement("span");
+    badge.className = "ps-badge ps-badge-" + rule.status;
+    badge.textContent = statusLabel[rule.status] || rule.status;
+    r.appendChild(scEl);
+    if (isActive) {
+      const you = document.createElement("span");
+      you.className = "ps-you-marker";
+      you.textContent = "Your result";
+      r.appendChild(you);
+    }
+    r.appendChild(badge);
+    return r;
+  }
+
+  function groupLabel(text) {
+    const d = document.createElement("div");
+    d.className = "ps-group-label";
+    d.textContent = text;
+    return d;
+  }
+
+  function resolve(opts) {
+    const id = resolveRule(Object.assign({age, timing}, opts));
+    return id;
+  }
+
+  const wrap = document.createElement("div");
+  wrap.className = "profile-summary";
+
+  const header = document.createElement("div");
+  header.className = "ps-header";
+
+  const title = document.createElement("div");
+  title.className = "ps-title";
+  title.textContent = "Other Outcomes for Your Profile";
+
+  const link = document.createElement("a");
+  link.href = "tree.html";
+  link.className = "ps-tree-link";
+  link.textContent = "Full Decision Reference →";
+
+  const tag = document.createElement("div");
+  tag.className = "ps-profile-tag";
+  tag.innerHTML = "Profile: <strong>" + ageText + "</strong> · <strong>" + timingText + "</strong>";
+
+  header.appendChild(title);
+  header.appendChild(link);
+  header.appendChild(tag);
+  wrap.appendChild(header);
+
+  // Keeping & Using
+  wrap.appendChild(groupLabel("Keeping & Using"));
+  wrap.appendChild(row("Keep it at home or use it at a range", "Hold for personal use", resolve({action:"keep"})));
+
+  // Gifting
+  wrap.appendChild(groupLabel("Gifting"));
+  if (timing === "pre") {
+    wrap.appendChild(row("Gift to immediate family (21+)", "Spouse, child, parent, grandparent, or sibling", resolve({action:"gift", recipient:"family"})));
+    if (age !== "under18") {
+      wrap.appendChild(row("Gift to family member age 18–20", "Close relative in the 18–20 age group", "gift_family_grandfathered_recipient_1820"));
+    }
+    wrap.appendChild(row("Gift to a friend or other Virginia resident", "Non-family, in-state person", resolve({action:"gift", recipient:"friend"})));
+  } else {
+    wrap.appendChild(row("Gift to anyone", "Any person — post-July 1 firearm", resolve({action:"gift", recipient:"family"})));
+  }
+
+  // Selling
+  wrap.appendChild(groupLabel("Selling"));
+  wrap.appendChild(row("Sell to a licensed gun dealer (FFL)", "Federally licensed firearms dealer", resolve({action:"sell", recipient:"ffl"})));
+  wrap.appendChild(row("Sell to an out-of-state buyer", "Via FFL in buyer's state", resolve({action:"sell", recipient:"outofstate"})));
+  if (timing === "pre") {
+    wrap.appendChild(row("Sell to a family member in Virginia", "Paid sale — even to family", resolve({action:"sell", recipient:"family"})));
+    wrap.appendChild(row("Private sale to a Virginia resident", "Friend or other in-state person", resolve({action:"sell", recipient:"friend"})));
+  }
+
+  // Inheritance & Estate
+  wrap.appendChild(groupLabel("Inheritance & Estate"));
+  wrap.appendChild(row("Bequeath in your will", "Leave to any heir — family or not", resolve({action:"bequeath", recipient:"family"})));
+  wrap.appendChild(row("Inherit from someone who owned it before their death", "You are the heir", "inherit_family"));
+
+  // Transport & Carry
+  wrap.appendChild(groupLabel("Transport & Carrying"));
+  wrap.appendChild(row("In a personal vehicle — secured in a locked container", "No specific destination required", resolve({action:"transport", transportContext:"vehicle"})));
+  wrap.appendChild(row("On private property with permission", null, resolve({action:"transport", transportContext:"private"})));
+  wrap.appendChild(row("Going to/from a range or hunting area", null, resolve({action:"transport", transportContext:"hunting"})));
+  wrap.appendChild(row("Walking in public — street, sidewalk, park", null, resolve({action:"transport", transportContext:"public"})));
+
+  // Interstate
+  wrap.appendChild(groupLabel("Interstate Travel"));
+  wrap.appendChild(row("Take it to another state", "Bring it back later — this is fine", resolve({action:"outofstate"})));
+  wrap.appendChild(row("Bring a gun bought out of state into Virginia", "Post-July 1 out-of-state purchase", "bring_into_va_post_purchase"));
+
+  // Surrender
+  wrap.appendChild(groupLabel("Surrender"));
+  wrap.appendChild(row("Turn it in to law enforcement or a buyback", null, resolve({action:"surrender"})));
+
+  return wrap;
 }
 
 function render() {
