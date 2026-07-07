@@ -6,10 +6,10 @@
 <title>Virginia Gun Law Checker — 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --navy:       #0e2a4a;
+  --navy:       #172f5a;
   --red:        #9e1a1a;
   --ground:     #f0ede7;
   --surface:    #ffffff;
@@ -27,6 +27,7 @@
   --sh-sm:0 1px 4px rgba(0,0,0,0.08);
   --font: 'Nunito', system-ui, -apple-system, sans-serif;
   --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-display: 'Cinzel', 'Trajan Pro', Georgia, serif;
 }
 @media (prefers-color-scheme: dark) { :root {
   --navy:#4a80b8; --red:#e07070; --ground:#12131e; --surface:#1c1e30;
@@ -79,21 +80,22 @@ body {
 .header-badge {
   display: inline-block;
   color: rgba(255,255,255,0.60);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   margin-bottom: 14px;
 }
 .site-header h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(26px, 5vw, 40px);
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 34px);
   font-weight: 600;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1.3;
   margin-bottom: 12px;
   text-wrap: balance;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.04em;
 }
 .site-header .header-sub {
   font-size: 17px;
@@ -251,9 +253,10 @@ body {
   gap: 6px;
   background: none;
   color: var(--navy);
+  font-family: var(--font-display);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.15em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 0 0 12px;
   border-bottom: 2px solid var(--navy);
@@ -376,7 +379,7 @@ body {
   display: inline-flex; align-items: center; gap: 8px;
   letter-spacing: 0.02em;
 }
-.continue-btn:hover { background: #0a1f38; }
+.continue-btn:hover { background: #0d2347; }
 .continue-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; transform: none; }
 
 /* ── MODEL LOOKUP ── */
@@ -443,10 +446,11 @@ body {
 .result-header.status-Unsettled   { background: var(--grey-bg); color: var(--grey); }
 .result-emoji { font-size: 52px; line-height: 1; margin-bottom: 12px; display: block; }
 .result-verdict {
-  font-family: var(--font-serif);
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
   margin-bottom: 10px;
 }
 .result-plain {
@@ -537,7 +541,7 @@ details.legal-details .legal-inner { padding: 18px 18px 20px; }
   letter-spacing: 0.02em;
   cursor: pointer; transition: background 0.12s;
 }
-.action-btn:hover { background: #0a1f38; }
+.action-btn:hover { background: #0d2347; }
 .action-btn-secondary {
   background: none; color: var(--muted); border: 2px solid var(--border);
   padding: 12px 22px; border-radius: var(--r-sm);
