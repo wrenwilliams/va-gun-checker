@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virginia 2026 Assault Firearm Compliance Checker</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --c-ink:       #1c1f2a;
+  --c-ground:    #f0eff8;
+  --c-surface:   #ffffff;
+  --c-accent:    #8b1414;
+  --c-blue:      #2d5480;
+  --c-border:    #cccbe0;
+  --c-muted:     #6b6a7a;
+
+  --c-ok:        #155724;
+  --c-ok-bg:     #d4edda;
+  --c-no:        #6b1515;
+  --c-no-bg:     #f8d7da;
+  --c-warn:      #7d5a00;
+  --c-warn-bg:   #fff3cd;
+  --c-grey:      #3d3f44;
+  --c-grey-bg:   #e2e3e5;
+
+  --c-notice-bg:     #fdfaf0;
+  --c-notice-border: #b89010;
+  --c-notice-text:   #4a3800;
+
+  --f-display: Georgia, "Times New Roman", serif;
+  --f-ui:      system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:    "Courier New", Courier, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-ink:       #dddce8;
+    --c-ground:    #12131e;
+    --c-surface:   #1a1c2c;
+    --c-accent:    #c43030;
+    --c-blue:      #4a80b8;
+    --c-border:    #2a2c42;
+    --c-muted:     #8a8998;
+    --c-ok:        #5cbf7a;  --c-ok-bg:   #0d2a18;
+    --c-no:        #e07070;  --c-no-bg:   #2b0e0e;
+    --c-warn:      #d4a020;  --c-warn-bg: #2b2000;
+    --c-grey:      #b0b3b8;  --c-grey-bg: #282b35;
+    --c-notice-bg:     #1e1c0e;
+    --c-notice-border: #9a7808;
+    --c-notice-text:   #d4b060;
+  }
+}
+:root[data-theme="dark"] {
+  --c-ink:       #dddce8;
+  --c-ground:    #12131e;
+  --c-surface:   #1a1c2c;
+  --c-accent:    #c43030;
+  --c-blue:      #4a80b8;
+  --c-border:    #2a2c42;
+  --c-muted:     #8a8998;
+  --c-ok:        #5cbf7a;  --c-ok-bg:   #0d2a18;
+  --c-no:        #e07070;  --c-no-bg:   #2b0e0e;
+  --c-warn:      #d4a020;  --c-warn-bg: #2b2000;
+  --c-grey:      #b0b3b8;  --c-grey-bg: #282b35;
+  --c-notice-bg:     #1e1c0e;
+  --c-notice-border: #9a7808;
+  --c-notice-text:   #d4b060;
+}
+:root[data-theme="light"] {
+  --c-ink:       #1c1f2a;
+  --c-ground:    #f0eff8;
+  --c-surface:   #ffffff;
+  --c-accent:    #8b1414;
+  --c-blue:      #2d5480;
+  --c-border:    #cccbe0;
+  --c-muted:     #6b6a7a;
+  --c-ok:        #155724;  --c-ok-bg:   #d4edda;
+  --c-no:        #6b1515;  --c-no-bg:   #f8d7da;
+  --c-warn:      #7d5a00;  --c-warn-bg: #fff3cd;
+  --c-grey:      #3d3f44;  --c-grey-bg: #e2e3e5;
+  --c-notice-bg:     #fdfaf0;
+  --c-notice-border: #b89010;
+  --c-notice-text:   #4a3800;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.6;
+  background: var(--c-ground);
+  color: var(--c-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.site-header { margin-bottom: 0; }
+
+.site-header .eyebrow {
+  font-family: var(--f-ui);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.site-header .eyebrow::before,
+.site-header .eyebrow::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 18px;
+  background: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.site-header h1 {
+  font-family: var(--f-display);
+  font-size: 1.65rem;
+  font-weight: normal;
+  color: var(--c-ink);
+  text-wrap: balance;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.site-header .subtitle {
+  font-family: var(--f-ui);
+  font-size: 0.79rem;
+  color: var(--c-muted);
+  line-height: 1.5;
+}
+
+.header-rule {
+  border: none;
+  border-top: 1px solid var(--c-border);
+  margin: 22px 0 24px;
+}
+
+/* ============================================================
+   BANNERS
+   ============================================================ */
+.banner {
+  border-left: 3px solid transparent;
+  padding: 13px 40px 13px 15px;
+  margin-bottom: 10px;
+  position: relative;
+  font-family: var(--f-ui);
+}
+.banner-enforcement {
+  background: var(--c-notice-bg);
+  border-color: var(--c-notice-border);
+}
+.banner-bgcheck {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid #2a7a40;
+}
+.banner-disclaimer {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-blue);
+}
+
+.banner strong {
+  display: block;
+  font-size: 0.77rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-bottom: 5px;
+}
+.banner-enforcement strong { color: var(--c-notice-text); }
+.banner-bgcheck strong     { color: #2a7a40; }
+.banner-disclaimer strong  { color: var(--c-blue); }
+
+.banner p {
+  font-size: 0.81rem;
+  color: var(--c-muted);
+  line-height: 1.5;
+}
+.banner p + p { margin-top: 4px; }
+.banner em { font-style: italic; }
+
+.dismiss-btn {
+  position: absolute;
+  top: 11px; right: 11px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--c-muted);
+  line-height: 1;
+  padding: 2px 4px;
+  font-family: var(--f-ui);
+}
+.dismiss-btn:hover { color: var(--c-ink); }
+
+.enf-toggle {
+  background: none;
+  border: none;
+  color: var(--c-notice-text);
+  font-family: var(--f-ui);
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+  margin-top: 8px;
+  display: inline-block;
+}
+.enf-toggle:hover { opacity: 0.7; }
+
+.enf-details { display: none; margin-top: 12px; }
+.enf-details.open { display: block; }
+
+.case-table-wrap { overflow-x: auto; }
+
+.case-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-family: var(--f-ui);
+  font-size: 0.73rem;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.case-table th {
+  text-align: left;
+  padding: 5px 8px;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  border-bottom: 1px solid var(--c-notice-border);
+}
+.case-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--c-border);
+  vertical-align: top;
+  color: var(--c-ink);
+  line-height: 1.45;
+}
+.case-table td em { font-style: italic; font-family: var(--f-display); }
+.case-table tr:last-child td { border-bottom: none; }
+
+.verdict-granted { color: var(--c-ok);   font-weight: 700; }
+.verdict-denied  { color: var(--c-no);   font-weight: 700; }
+.verdict-pending { color: var(--c-warn); font-weight: 700; }
+
+.scotus-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--c-notice-border);
+  font-family: var(--f-ui);
+  font-size: 0.77rem;
+  color: var(--c-notice-text);
+  line-height: 1.55;
+}
+.scotus-note strong { display: inline; font-size: inherit; letter-spacing: 0; }
+.scotus-note em { font-family: var(--f-display); font-style: italic; }
+
+/* ============================================================
+   PROGRESS — six rule segments
+   ============================================================ */
+.progress-bar-wrap {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+.progress-seg {
+  flex: 1;
+  height: 2px;
+  background: var(--c-border);
+}
+.progress-seg--done   { background: var(--c-ink); }
+.progress-seg--active { background: var(--c-accent); }
+.progress-bar-fill { display: none; }
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+.breadcrumb {
+  font-family: var(--f-ui);
+  font-size: 0.72rem;
+  color: var(--c-muted);
+  margin-bottom: 12px;
+}
+.breadcrumb span { color: var(--c-ink); font-weight: 500; }
+
+/* ============================================================
+   QUESTION CARDS
+   ============================================================ */
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  padding: 22px 24px 20px;
+  margin-bottom: 14px;
+  animation: cardIn 0.17s ease both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card .step-label {
+  font-family: var(--f-ui);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.card .step-label::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 11px;
+  background: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.card h2 {
+  font-family: var(--f-display);
+  font-size: 1.12rem;
+  font-weight: normal;
+  color: var(--c-ink);
+  text-wrap: balance;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.card p.desc {
+  font-family: var(--f-ui);
+  font-size: 0.83rem;
+  color: var(--c-muted);
+  margin-bottom: 16px;
+  line-height: 1.55;
+}
+
+/* ============================================================
+   OPTION BUTTONS
+   ============================================================ */
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.opt-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--c-ground);
+  border: 1px solid var(--c-border);
+  padding: 10px 13px;
+  cursor: pointer;
+  font-family: var(--f-ui);
+  font-size: 0.875rem;
+  color: var(--c-ink);
+  transition: border-color 0.1s, background 0.1s;
+  display: grid;
+  grid-template-columns: 13px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.opt-btn::before {
+  content: '';
+  display: block;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--c-border);
+  margin-top: 3px;
+  transition: border-color 0.1s, background 0.1s;
+  flex-shrink: 0;
+}
+.opt-btn:hover {
+  border-color: var(--c-blue);
+  background: var(--c-surface);
+}
+.opt-btn:hover::before {
+  border-color: var(--c-blue);
+  background: var(--c-blue);
+  box-shadow: inset 0 0 0 2.5px var(--c-surface);
+}
+.opt-btn:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 1px; }
+
+.opt-title { font-weight: 600; display: block; line-height: 1.4; }
+.opt-sub   { display: block; font-size: 0.76rem; color: var(--c-muted); margin-top: 2px; font-weight: normal; line-height: 1.4; }
+
+/* ============================================================
+   CHECKBOX LIST
+   ============================================================ */
+.check-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.check-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-family: var(--f-ui);
+  font-size: 0.875rem;
+  color: var(--c-ink);
+  line-height: 1.45;
+}
+.check-list input[type="checkbox"] {
+  margin-top: 2px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  accent-color: var(--c-blue);
+  cursor: pointer;
+}
+
+.continue-btn {
+  margin-top: 18px;
+  background: var(--c-ink);
+  color: var(--c-surface);
+  border: 1px solid var(--c-ink);
+  padding: 10px 26px;
+  font-family: var(--f-ui);
+  font-size: 0.83rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+.continue-btn:hover   { background: var(--c-accent); border-color: var(--c-accent); }
+.continue-btn:disabled { background: var(--c-border); border-color: var(--c-border); color: var(--c-muted); cursor: not-allowed; }
+.continue-btn:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 2px; }
+
+/* ============================================================
+   RESULT CARD
+   ============================================================ */
+.result-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-top: 3px solid var(--c-ink);
+  padding: 26px 28px;
+  margin-bottom: 16px;
+  animation: cardIn 0.2s ease both;
+}
+
+.result-card > h2 {
+  font-family: var(--f-ui);
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-bottom: 16px;
+}
+
+/* Badge — left-bar rectangle, not a pill */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--f-ui);
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px 5px 16px;
+  margin-bottom: 22px;
+  position: relative;
+  border: 1px solid transparent;
+}
+.badge::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.badge-Permitted   { background: var(--c-ok-bg);   color: var(--c-ok);   border-color: var(--c-ok); }
+.badge-Permitted::before   { background: var(--c-ok); }
+.badge-Prohibited  { background: var(--c-no-bg);   color: var(--c-no);   border-color: var(--c-no); }
+.badge-Prohibited::before  { background: var(--c-no); }
+.badge-Conditional { background: var(--c-warn-bg); color: var(--c-warn); border-color: var(--c-warn); }
+.badge-Conditional::before { background: var(--c-warn); }
+.badge-Unsettled   { background: var(--c-grey-bg); color: var(--c-grey); border-color: var(--c-grey); }
+.badge-Unsettled::before   { background: var(--c-grey); }
+
+.result-section { margin-bottom: 18px; }
+
+.result-label {
+  font-family: var(--f-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-bottom: 5px;
+}
+
+/* Authority — italic citation */
+.authority-text {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 0.83rem;
+  color: var(--c-muted);
+  line-height: 1.55;
+}
+
+/* Explanation — Georgia, the legal document extract */
+.explanation-text {
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  color: var(--c-ink);
+  line-height: 1.75;
+}
+
+.uncertainty-flag {
+  border-left: 3px solid var(--c-notice-border);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-family: var(--f-ui);
+  font-size: 0.81rem;
+  color: var(--c-notice-text);
+  background: var(--c-notice-bg);
+  line-height: 1.5;
+}
+.uncertainty-flag strong { font-weight: 700; }
+
+/* Open questions — footnote style */
+.open-questions {
+  border-top: 1px solid var(--c-border);
+  padding-top: 16px;
+  margin-bottom: 16px;
+}
+.open-questions .oq-title {
+  font-family: var(--f-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  margin-bottom: 10px;
+}
+.open-questions ul { list-style: none; }
+.open-questions ul li {
+  font-family: var(--f-ui);
+  font-size: 0.79rem;
+  color: var(--c-muted);
+  line-height: 1.55;
+  padding: 7px 0 7px 44px;
+  border-bottom: 1px solid var(--c-border);
+  position: relative;
+}
+.open-questions ul li:last-child { border-bottom: none; }
+.open-questions ul li::before {
+  content: attr(data-ref);
+  position: absolute;
+  left: 0;
+  top: 8px;
+  font-family: var(--f-mono);
+  font-size: 0.67rem;
+  color: var(--c-accent);
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  width: 38px;
+}
+
+.result-footnote {
+  font-family: var(--f-ui);
+  font-size: 0.74rem;
+  color: var(--c-muted);
+  line-height: 1.55;
+  border-top: 1px solid var(--c-border);
+  padding-top: 14px;
+  margin-top: 4px;
+}
+.result-footnote em { font-style: italic; }
+
+.restart-btn {
+  background: none;
+  border: 1px solid var(--c-border);
+  color: var(--c-muted);
+  padding: 7px 18px;
+  font-family: var(--f-ui);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.1s, color 0.1s;
+  margin-top: 8px;
+}
+.restart-btn:hover { border-color: var(--c-ink); color: var(--c-ink); }
+.restart-btn:focus-visible { outline: 2px solid var(--c-blue); outline-offset: 2px; }
+
+.excluded-card {
+  background: var(--c-notice-bg);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-notice-border);
+  padding: 18px 22px;
+  margin-bottom: 14px;
+}
+.excluded-card h2 {
+  font-family: var(--f-display);
+  font-size: 1rem;
+  font-weight: normal;
+  color: var(--c-notice-text);
+  margin-bottom: 7px;
+}
+.excluded-card p { font-size: 0.83rem; color: var(--c-muted); line-height: 1.5; }
+
+/* ============================================================
+   MODEL LOOKUP
+   ============================================================ */
+.model-search {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font-family: var(--f-ui);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  appearance: none;
+}
+.model-search:focus { outline: none; border-color: var(--c-blue); }
+.model-search::placeholder { color: var(--c-muted); }
+
+.model-results { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+
+.model-result-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 10px 13px;
+  background: var(--c-ground);
+  border: 1px solid var(--c-border);
+  cursor: pointer;
+  font-family: var(--f-ui);
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.1s, background 0.1s;
+}
+.model-result-item:hover { border-color: var(--c-blue); background: var(--c-surface); }
+.model-result-name { font-size: 0.875rem; font-weight: 600; display: block; line-height: 1.3; color: var(--c-ink); }
+.model-result-note { font-size: 0.76rem; color: var(--c-muted); display: block; margin-top: 3px; line-height: 1.4; }
+
+.model-chip {
+  font-family: var(--f-ui);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.model-chip-covered     { background: var(--c-ok-bg);   color: var(--c-ok);   border-color: var(--c-ok); }
+.model-chip-not_covered { background: var(--c-grey-bg); color: var(--c-grey); border-color: var(--c-grey); }
+.model-chip-varies      { background: var(--c-warn-bg); color: var(--c-warn); border-color: var(--c-warn); }
+
+.model-skip-btn {
+  background: none;
+  border: 1px solid var(--c-border);
+  color: var(--c-muted);
+  padding: 8px 14px;
+  font-family: var(--f-ui);
+  font-size: 0.8rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.1s, color 0.1s;
+  margin-top: 4px;
+}
+.model-skip-btn:hover { border-color: var(--c-ink); color: var(--c-ink); }
+
+.model-varies-note {
+  border-left: 3px solid var(--c-notice-border);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-family: var(--f-ui);
+  font-size: 0.81rem;
+  color: var(--c-notice-text);
+  background: var(--c-notice-bg);
+  line-height: 1.5;
+}
+
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="site-header">
+    <div class="eyebrow">Commonwealth of Virginia &mdash; 2026 Firearm Package</div>
+    <h1>Assault Firearm Compliance Checker</h1>
+    <p class="subtitle">Informational analysis under HB217/SB749, HB1524/SB727, and HB1525 &mdash; assumes law fully in effect as of July&nbsp;1,&nbsp;2026</p>
+  </div>
+  <hr class="header-rule">
+
+  <div class="banner banner-enforcement" id="banner-enforcement">
+    <button class="dismiss-btn" onclick="document.getElementById('banner-enforcement').style.display='none'" aria-label="Dismiss">&#x2715;</button>
+    <strong>Enforcement Status &mdash; July 6, 2026: Four Cases Proceeding Separately</strong>
+    <p>Two state courts have issued preliminary injunctions; two have not. The U.S. DOJ filed a federal challenge July 1. The Virginia Supreme Court declined on July 6 to consolidate the four state cases &mdash; each proceeds independently in its own circuit. AG Jones states the ban <em>is in effect</em> in the remaining ~127 jurisdictions. This tool answers as if the law is fully in effect.</p>
+    <button class="enf-toggle" onclick="(function(b){var d=document.getElementById('enf-details');d.classList.toggle('open');b.textContent=d.classList.contains('open')?'Hide case details ▲':'Show all five cases ▼';})(this)">Show all five cases &#x25BC;</button>
+    <div class="enf-details" id="enf-details">
+      <div class="case-table-wrap">
+        <table class="case-table">
+          <thead><tr><th>Case</th><th>Court</th><th>Plaintiffs</th><th>Injunction</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td><em>Crump v. Katz</em></td><td>Lancaster Co. Circuit</td><td>GOA, VCDL, Crump</td><td class="verdict-granted">GRANTED June 25</td><td>Binds VSP only; through Dec 31, 2026; AG appeal pending</td></tr>
+            <tr><td><em>Santolla v. Katz</em></td><td>Washington Co. Circuit</td><td>NRA, VSSA</td><td class="verdict-granted">GRANTED June 29</td><td>Binds VSP + 6 named CAs; delays eff. date to July 1, 2027; AG appeal pending</td></tr>
+            <tr><td><em>Black v. Hook</em></td><td>Fauquier Co. Circuit</td><td>NSSF plaintiffs</td><td class="verdict-pending">PENDING</td><td>Status unconfirmed; no consolidation with other cases</td></tr>
+            <tr><td><em>Curtis v. Katz</em></td><td>Spotsylvania Co. Circuit</td><td>Militia-clause challengers</td><td class="verdict-denied">DENIED June 18</td><td>Ban enforceable in Spotsylvania; no appeal reported</td></tr>
+            <tr><td><em>United States v. Virginia</em></td><td>E.D. Va. (federal)</td><td>U.S. DOJ</td><td class="verdict-pending">FILED July 1; TRO pending</td><td>Bruen / Second Amendment challenge; scope TBD</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.73rem;color:var(--c-muted);margin-bottom:8px;"><strong>July 6:</strong> Virginia Supreme Court declined to consolidate the four state cases. Appeals proceed separately in each circuit. Consolidation at the Court of Appeals level remains possible.</p>
+      <div class="scotus-note">
+        <strong>U.S. Supreme Court &mdash; Cert Granted June 30, 2026.</strong> SCOTUS consolidated <em>Viramontes v. Cook County</em> (7th Cir.) and <em>Grant v. Higgins</em> (2nd Cir.) to decide whether AR-15-pattern rifles are protected under the Second Amendment. Argument this fall; decision expected spring 2027. A ruling against those bans would almost certainly invalidate Virginia&rsquo;s law.
+      </div>
+    </div>
+  </div>
+
+  <div class="banner banner-bgcheck" id="banner-bgcheck">
+    <button class="dismiss-btn" onclick="document.getElementById('banner-bgcheck').style.display='none'" aria-label="Dismiss">&#x2715;</button>
+    <strong>Private-Sale Background Checks Now in Effect &mdash; July 1, 2026</strong>
+    <p>HB1525 revived universal background check requirements for private firearm transfers. A Lynchburg Circuit Court dissolved the prior injunction June 25. VSP NICS checks for private sales resumed July 1. Applies to all firearms, not only assault firearms.</p>
+  </div>
+
+  <div class="banner banner-disclaimer" id="banner-disclaimer">
+    <button class="dismiss-btn" onclick="document.getElementById('banner-disclaimer').style.display='none'" aria-label="Dismiss">&#x2715;</button>
+    <strong>Informational Only &mdash; Not Legal Advice</strong>
+    <p>This tool is a general reference based on publicly available bill text and reported court orders. It does not constitute legal advice. Consult a licensed Virginia attorney before acting on any information here.</p>
+    <p>Questions? Contact <strong>Schneider &amp; Williams, P.C.</strong> &mdash; <a href="tel:2766942455" style="color:inherit;">276-694-2455</a> &mdash; <a href="https://www.swvalawfirm.com" style="color:inherit;">swvalawfirm.com</a></p>
+  </div>
+
+  <div id="app"></div>
+</div>
+
+<script>
+// =============================================================================
+// RULES DATA OBJECT
+// Schema: { id, status, authority, explanation, uncertainty|null, openQuestions[] }
+// status: "Permitted" | "Prohibited" | "Conditional" | "Unsettled"
+// OQ keys: OQ1 family sale/gift/inheritance; OQ2 transport exceptions; OQ3 controlling bill version; OQ4 geographic enforcement gap
+// =============================================================================
+
+const OQ = {
+  OQ1: "OQ1 – RESOLVED (July 7, 2026): The enrolled text of § 18.2-287.4:1(C)(x) uses 'gift' explicitly: 'the transfer of an assault weapon as a gift to an immediate family member.' A paid SALE to an immediate family member is NOT covered by this carve-out and is Prohibited. The inheritance carve-out (§ 18.2-287.4:1(C)(vii)) has NO family restriction — any person who 'is not prohibited from possessing firearms by state or federal law' may inherit, including a non-family devisee under a will. 'Immediate family member' is defined in the statute as: a spouse, children, parents, grandparents, and siblings. Source: HB217ER (CHAP1106), enrolled text confirmed.",
+  OQ2: "OQ2 – RESOLVED (July 7, 2026): Transport safe-harbors are confirmed through the § 18.2-308(C) exemptions that apply mutatis mutandis to the § 18.2-287.4 carry ban. Confirmed exemptions: (C)(3) going to/from an established shooting range with weapon unloaded and securely wrapped; (C)(5) going to/from a place of purchase or repair with weapon unloaded and securely wrapped; (C)(8) weapon secured in a container or compartment in a personal, private motor vehicle — NOT destination-specific, covers general vehicle transport; (C)(9) going to/from a firearms training location with weapon unloaded and securely wrapped. The HB1524 reenrolled text also expressly exempts persons 'actually engaged in lawful hunting or lawful recreational shooting activities at an established shooting range or shooting contest.' Remaining gap: pedestrian transport on a public street not headed to one of the listed destinations remains prohibited. Sources: Va. Code § 18.2-308(C) confirmed via law.lis.virginia.gov; HB1524ER2 enrolled text confirmed.",
+  OQ3: "OQ3 – RESOLVED (July 7, 2026): HB217ER (enrolled regular session, CHAP1106, signed by Governor Spanberger) is the controlling version of the assault firearm transfer prohibition. No reenrolled version of HB217 (ER2) exists — unlike HB1524 and HB1525, which each had reconvened-session reenrollments, HB217 was not sent back with Governor's amendments. The enrolled HB217ER creates § 18.2-287.4:1 as the assault firearm transfer prohibition (not § 18.2-287.4:1, which does not exist). Source: HB217ER (1212106.PDF), confirmed from LIS enrolled text.",
+  OQ4: "OQ4 – Geographic enforcement gap (ongoing, live litigation): Two preliminary injunctions are in place as of July 1, 2026. (1) Crump v. Katz (Lancaster County Circuit Court, Judge John Martin, June 25, 2026): enjoins Virginia State Police Superintendent Col. Jeffrey S. Katz from enforcing the transfer/sale/import/manufacture/purchase ban and the magazine ban; effective through December 31, 2026. (2) Santolla v. Katz (Washington County Circuit Court, Judge Jeffrey Campbell, June 29, 2026): enjoins VSP plus the Commonwealth's Attorneys for Washington County, Chesterfield County, Frederick County, York County, Giles County, and Chesapeake; effective through July 1, 2027. SCOPE: The NRA characterized Santolla as 'statewide' but that is incorrect. The opinion letter enjoins 'the Defendants' (named parties only). Defense attorney Tim Anderson confirmed: 'It is not a statewide injunction. A Fairfax County police officer can still make an arrest.' Approximately 127 jurisdictions are not bound by either injunction and may enforce the ban. The AG appealed both injunctions to the Virginia Court of Appeals. The Virginia Supreme Court declined to consolidate the four pending state cases on July 6, 2026; each proceeds on its own appellate track. A federal TRO in United States v. Virginia (E.D. Va.) remains pending and could provide broader relief if granted. Enforcement risk is jurisdiction-specific.",
+  OQ5: "OQ5 – RESOLVED (July 6, 2026): HB1525 (CHAP1102) amended Va. Code § 18.2-308.7, which separates the age restrictions into two tiers: (A) persons UNDER 21 may not purchase a handgun or assault firearm; (B) persons UNDER 18 may not possess or transport a handgun or assault firearm. Persons aged 18-20 are subject only to the purchase prohibition — they are not prohibited from possessing or transporting an assault firearm they lawfully acquired. A grandfathered owner who is 18-20 years old may continue to possess their firearm. Source: Va. Code § 18.2-308.7 as amended by CHAP1102 (2026 Acts of Assembly), confirmed via law.lis.virginia.gov.",
+  OQ6: "OQ6 – RESOLVED (July 6, 2026): The enrolled text of § 18.2-308.2:2 (the assault firearm definition cross-referenced by HB217/SB749) explicitly lists for semi-automatic centerfire rifles: 'a threaded barrel capable of accepting (a) a muzzle brake, (b) a muzzle compensator, (c) a sound suppressor, or (d) a flash suppressor.' Muzzle brakes and compensators are confirmed features. A rifle with a threaded barrel fitted for a muzzle brake — including many precision rifles, hunting rifles, and AR-pattern variants — satisfies this feature test. Source: Va. Code § 18.2-308.2:2, confirmed via law.lis.virginia.gov."
+};
+
+const RULES = {
+  not_covered: {
+    id: "not_covered", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (definition); 18.2-287.4:1",
+    explanation: "Based on the features described, this firearm does not qualify as an assault firearm under the 2026 Virginia statute as applied to rifles. Manually operated firearms (bolt-action, pump-action, lever-action, slide-action), antique firearms, and permanently inoperable weapons are excluded by definition. Normal Virginia and federal firearm laws still apply.",
+    uncertainty: "This tool is scoped to semi-automatic centerfire rifles. HB217/SB749 also covers semi-automatic centerfire pistols (two or more qualifying features) and semi-automatic shotguns (one or more qualifying features, or fixed magazine exceeding 15 rounds), and shotguns with revolving cylinders. If this firearm is a pistol or shotgun, consult a licensed attorney — this result may not apply.",
+    openQuestions: []
+  },
+  keep_pre_grandfathered_21plus: {
+    id: "keep_pre_grandfathered_21plus", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (grandfathering clause); HB1525 (age 21 purchase, not possession)",
+    explanation: "Continued possession and home use of an assault firearm lawfully owned before July 1, 2026 is permitted. The 2026 legislation grandfathers pre-existing lawful ownership. HB1525 raised the purchase age to 21 but did not restrict possession by persons 18-20 of lawfully acquired firearms.",
+    uncertainty: null, openQuestions: []
+  },
+  keep_pre_grandfathered_1820: {
+    id: "keep_pre_grandfathered_1820", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (grandfathering clause); HB1525 (CHAP1102) – Va. Code § 18.2-308.7 (purchase prohibition for under-21; possession restriction applies only under-18)",
+    explanation: "A person 18-20 who lawfully owned this firearm before July 1, 2026 may continue to possess it. The 2026 grandfathering clause in HB217/SB749 protects pre-existing lawful ownership. HB1525 (CHAP1102) amended § 18.2-308.7 and imposes two distinct age tiers: (1) persons under 21 may not purchase an assault firearm; (2) persons under 18 may not possess or transport one. Because the possession restriction applies only to persons under 18 — not to persons aged 18-20 — a grandfathered 18-20 year old owner is not prohibited from continued possession. They may not, however, acquire an additional assault firearm by purchase.",
+    uncertainty: null, openQuestions: []
+  },
+  keep_pre_grandfathered_under18: {
+    id: "keep_pre_grandfathered_under18", status: "Unsettled",
+    authority: "Va. Code § 18.2-308.7 (juvenile assault firearm possession); HB217/SB749 – Va. Code § 18.2-287.4:1",
+    explanation: "Possession of an assault firearm by a person under 18 is separately restricted under Va. Code § 18.2-308.7, with narrow exceptions for military, law enforcement, and JROTC/cadet activities. The 2026 grandfathering clause does not clearly override this age-based restriction. Verify against enrolled bill text and current § 18.2-308.7 before acting.",
+    uncertainty: "The interaction between the grandfathering clause in HB217/SB749 and the existing under-18 assault firearm restriction in § 18.2-308.7 has not been authoritatively resolved.",
+    openQuestions: []
+  },
+  keep_post_21plus: {
+    id: "keep_post_21plus", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1; 18.2-308.2:2; Class 1 misdemeanor, 3-year firearms disability on conviction",
+    explanation: "Purchasing or otherwise acquiring an assault firearm on or after July 1, 2026 is prohibited regardless of age, subject to the narrow FFL and out-of-state transfer exceptions. If possession results from an unlawful post-July 1 acquisition, continued possession is also unlawful. The grandfathering clause applies only to items lawfully owned before that date. Current injunctions block VSP enforcement but do not bind all local agencies.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  keep_post_1820: {
+    id: "keep_post_1820", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1; HB1525 (purchase age 21); 18.2-308.2:2",
+    explanation: "A person 18-20 years old cannot purchase an assault firearm (HB1525 sets minimum purchase age at 21) and cannot receive a non-exempt transfer under HB217/SB749. There is no lawful way for a person 18-20 to acquire an assault firearm after July 1, 2026 under Virginia law. Current injunctions block VSP enforcement but do not bind all local agencies.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  keep_post_under18: {
+    id: "keep_post_under18", status: "Prohibited",
+    authority: "Va. Code § 18.2-308.7; HB217/SB749 – Va. Code § 18.2-287.4:1",
+    explanation: "Persons under 18 are prohibited from possessing assault firearms under § 18.2-308.7, with narrow military/LE/cadet exceptions, and they also cannot lawfully receive a transfer of an assault firearm under the 2026 package. There is no lawful path to new acquisition or possession.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  gift_family_grandfathered_21plus: {
+    id: "gift_family_grandfathered_21plus", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(C)(x) (immediate family gift carve-out); 18 U.S.C. § 922(a)(5)",
+    explanation: "The enrolled text of § 18.2-287.4:1(C)(x) explicitly carves out 'the transfer of an assault weapon as a gift to an immediate family member if the transferor lawfully purchased and possessed the assault firearm prior to July 1, 2026, and the immediate family member to whom the assault firearm is transferred is not prohibited from possessing firearms under state or federal law.' 'Immediate family member' is defined by statute as: a spouse, children, parents, grandparents, and siblings. The recipient must not be prohibited from possessing firearms — no minimum age beyond that is specified. Federal law does not require an FFL for an intrastate gift between non-prohibited persons. No background check is required by the gift carve-out (§ 18.2-308.2:5's background check provision covers sales, not gifts).",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  gift_family_grandfathered_recipient_1820: {
+    id: "gift_family_grandfathered_recipient_1820", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(C)(x) (family gift carve-out); HB1525 (CHAP1102) – Va. Code § 18.2-308.7 (purchase age 21; possession restriction is under-18 only)",
+    explanation: "A grandfathered owner may gift an assault firearm to an immediate family member who is 18-20 years old. The family gift carve-out (§ 18.2-287.4:1(C)(x)) requires only that the recipient 'is not prohibited from possessing firearms under state or federal law.' Under HB1525 (§ 18.2-308.7 as amended), persons aged 18-20 are prohibited from purchasing assault firearms but are NOT prohibited from possessing them — the possession restriction applies only to persons under 18. Because the recipient is not prohibited from possessing, the carve-out is satisfied. No minimum age is stated in the carve-out itself. No background check is required for the gift (§ 18.2-308.2:5 background check requirements cover sales, not gifts).",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  gift_family_post_july1: {
+    id: "gift_family_post_july1", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1; 18.2-309.1",
+    explanation: "An assault firearm acquired after July 1, 2026 cannot be gifted even to immediate family. The family transfer carve-out applies only to firearms that were grandfathered (lawfully owned before July 1, 2026). Post-July 1 acquisition is itself prohibited, so there is no lawful item to transfer.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  gift_nonfamily_va: {
+    id: "gift_nonfamily_va", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code §§ 18.2-287.4:1, 18.2-309.1; Class 1 misdemeanor; 3-year firearms disability",
+    explanation: "Gifting or otherwise transferring a grandfathered assault firearm to a friend or non-family Virginia resident is prohibited under the 2026 package. Transfer carve-outs are limited to FFLs, out-of-state buyers, immediate family, gunsmiths for service, and inheritance. A private gift to a non-family in-state person does not qualify. Current injunctions block VSP enforcement but do not bind all local agencies.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  sell_ffl: {
+    id: "sell_ffl", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (FFL carve-out); 18 U.S.C. § 922(b)(3)",
+    explanation: "A grandfathered owner may sell or consign an assault firearm to a licensed dealer (FFL). This is an explicit carve-out in the 2026 legislation. The FFL then becomes responsible for any subsequent transfer. Federal dealer rules apply to the FFL's onward disposition.",
+    uncertainty: null, openQuestions: []
+  },
+  sell_outofstate_buyer: {
+    id: "sell_outofstate_buyer", status: "Conditional",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (out-of-state buyer carve-out); 18 U.S.C. §§ 922(a)(5), 922(b)(3), 926A",
+    explanation: "Sale to an out-of-state buyer who can lawfully possess the firearm in their home state is permitted, but federal law requires the transfer to be completed through a licensed dealer in the buyer's state. The seller as a non-FFL cannot hand the firearm directly to an out-of-state buyer. The transaction must be routed through the buyer's FFL. The buyer must be able to lawfully possess an assault firearm in their state.",
+    uncertainty: null, openQuestions: []
+  },
+  sell_private_va: {
+    id: "sell_private_va", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code §§ 18.2-287.4:1, 18.2-309.1; Class 1 misdemeanor; 3-year firearms disability",
+    explanation: "A private sale of a grandfathered assault firearm to another Virginia resident is prohibited. The transfer carve-outs under HB217/SB749 do not include private sales to in-state non-family individuals. The grandfathering clause preserves ownership, not the right to sell privately in-state. Current injunctions block VSP enforcement but do not bind all local agencies; exposure depends on jurisdiction.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  sell_family_va: {
+    id: "sell_family_va", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(B), (C)(x); § 18.2-308.2:5(E); Class 1 misdemeanor; 3-year firearms disability",
+    explanation: "A paid sale of a grandfathered assault firearm to a family member is Prohibited. The enrolled text of § 18.2-287.4:1(C)(x) uses the word 'gift' explicitly — it carves out only 'the transfer of an assault weapon as a gift to an immediate family member.' A sale is not a gift. Additionally, § 18.2-308.2:5(E) separately prohibits any person from selling an assault firearm 'for money, goods, services, or anything else of value.' Both the transfer prohibition (§ 18.2-287.4:1(B)) and the private-sale provision (§ 18.2-308.2:5(E)) bar the transaction. If the intent is to benefit a family member, the correct vehicle is a gift.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  inherit_family: {
+    id: "inherit_family", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(C)(vii) (inheritance carve-out)",
+    explanation: "The enrolled text of § 18.2-287.4:1(C)(vii) carves out 'the receipt of an assault firearm by inheritance, and possession of the inherited assault firearm if the decedent lawfully possessed such assault firearm prior to his death and the person inheriting such assault firearm is not prohibited from possessing firearms by state or federal law.' The heir must not be prohibited from possessing firearms — no minimum age beyond that is stated. An 18-20 year old family heir who is otherwise non-prohibited qualifies. The estate's personal representative may hold the firearm during administration.",
+    uncertainty: null, openQuestions: []
+  },
+  inherit_nonfamily_devisee: {
+    id: "inherit_nonfamily_devisee", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(C)(vii) (inheritance carve-out); Va. Code Title 64.2",
+    explanation: "The enrolled text of § 18.2-287.4:1(C)(vii) has no family restriction on inheritance. It carves out receipt by inheritance if 'the decedent lawfully possessed such assault firearm prior to his death and the person inheriting such assault firearm is not prohibited from possessing firearms by state or federal law.' A non-family devisee named in a will qualifies, provided they are not prohibited from possessing firearms. No minimum age is stated beyond general firearms disability law. The executor may hold the firearm during estate administration.",
+    uncertainty: null, openQuestions: []
+  },
+  bequeath_intent: {
+    id: "bequeath_intent", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1(C)(vii) (inheritance carve-out); Va. Code Title 64.2",
+    explanation: "A grandfathered owner may bequeath an assault firearm by will to any designated heir — family or non-family — provided the heir is not prohibited from possessing firearms under state or federal law. The inheritance carve-out (§ 18.2-287.4:1(C)(vii)) has no family restriction. The will should designate the firearm specifically. The estate's personal representative may hold the firearm during administration. Consult an estate-planning attorney to ensure the bequest is properly structured and the intended heir's eligibility is confirmed at the time of transfer.",
+    uncertainty: null, openQuestions: []
+  },
+  transport_public_grandfathered: {
+    id: "transport_public_grandfathered", status: "Unsettled",
+    authority: "HB1524/SB727 – Va. Code § 18.2-287.4 (public-carry ban, as amended by HB1524ER2 reenrolled reconvened session); § 18.2-308 and § 18.2-308.016 (exemptions apply mutatis mutandis)",
+    explanation: "The reenrolled HB1524 amends § 18.2-287.4 to prohibit carrying an assault firearm 'on or about his person' in public streets, roads, alleys, sidewalks, rights-of-way, parks, and all places open to the public. Confirmed exemptions: law enforcement (official duties), military (official duties), cadet corps (public institution, military training or ceremonial events), and persons 'actually engaged in lawful hunting or lawful recreational shooting activities at an established shooting range or shooting contest.' No explicit cased/unloaded/locked transport carve-out exists in the statute text. However, §§ 18.2-308 and 18.2-308.016 exemptions apply mutatis mutandis, including provisions for persons traveling to/from shooting ranges and other lawful transport scenarios. The Crump and Santolla injunctions target HB217/SB749's transfer ban, not the carry ban.",
+    uncertainty: "Whether the § 18.2-308 mutatis mutandis exemptions (e.g., unloaded, cased firearm travel to/from a range) fully cover a grandfathered owner's general public transport has not been authoritatively interpreted.",
+    openQuestions: [OQ.OQ4]
+  },
+  transport_vehicle_grandfathered: {
+    id: "transport_vehicle_grandfathered", status: "Permitted",
+    authority: "Va. Code § 18.2-287.4 (public-carry ban); § 18.2-308(C)(8) (mutatis mutandis exemption: weapon secured in container or compartment in personal vehicle); 18 U.S.C. § 926A (federal safe passage, interstate only); HB110 (civil penalty for visible handgun in unattended vehicle — handguns only)",
+    explanation: "Virginia Code § 18.2-308(C)(8) exempts 'any person who may lawfully possess a firearm and is carrying a handgun while in a personal, private motor vehicle or vessel and such handgun is secured in a container or compartment in the vehicle or vessel.' Applied mutatis mutandis to assault firearms, this means a grandfathered owner may transport an assault firearm in a personal vehicle when it is secured in a container or compartment (e.g., locked case in trunk, locked container in bed of truck). This exemption is not destination-specific — it covers general vehicle transport, not just travel to a range or gunsmith. Federal safe passage (18 U.S.C. § 926A) separately protects continuous interstate travel with the weapon unloaded in a locked container. HB110 imposes a civil penalty for a handgun left visible in an unattended vehicle; that applies to handguns only and is a separate provision.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  transport_private_land: {
+    id: "transport_private_land", status: "Permitted",
+    authority: "HB1524/SB727 – Va. Code § 18.2-287.4 (public-place restriction does not extend to private property)",
+    explanation: "Carrying or transporting a grandfathered assault firearm on private land where you have permission is not restricted by the public-carry ban, which is limited to public places. Normal property-owner rules and posted restrictions still apply. The firearm must still be grandfathered.",
+    uncertainty: null, openQuestions: []
+  },
+  transport_hunting: {
+    id: "transport_hunting", status: "Conditional",
+    authority: "HB1524/SB727 – Va. Code § 18.2-287.4 (public-carry ban); HB1524ER2 (confirmed exemption for persons 'actually engaged in lawful hunting or lawful recreational shooting activities at an established shooting range or shooting contest'); § 18.2-308 and § 18.2-308.016 (mutatis mutandis exemptions); Va. Code § 29.1-300 et seq.",
+    explanation: "The reenrolled HB1524 text explicitly exempts 'any person actually engaged in lawful hunting or lawful recreational shooting activities at an established shooting range or shooting contest' from the carry ban. While actively hunting in the field, or while at an established shooting range, a grandfathered owner is exempt. Transit: if traveling to/from a hunting area or shooting range in a personal vehicle with the weapon secured in a container or compartment, § 18.2-308(C)(8) (mutatis mutandis) covers the trip — the C(8) exemption is not destination-specific. Transit to/from a shooting range on foot with the weapon unloaded and securely wrapped is covered by § 18.2-308(C)(3). Pedestrian transit to a hunting area not at a recognized range is the only gap remaining.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  take_outofstate: {
+    id: "take_outofstate", status: "Conditional",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1; 18 U.S.C. § 926A (federal safe passage); destination state law",
+    explanation: "A grandfathered owner may take their assault firearm out of Virginia. Federal law (18 U.S.C. § 926A) protects interstate transport where the firearm is legal at both origin and destination, unloaded, and in a locked container separate from ammunition. Virginia's restriction is on in-state transfers, not on leaving the state with your own property. Destination-state law must also permit possession. For the Virginia legs of the trip: § 18.2-308(C)(8) (mutatis mutandis) permits vehicle transport with the weapon secured in a container or compartment — keep it unloaded in a locked case in the trunk.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  bring_into_va_own_grandfathered: {
+    id: "bring_into_va_own_grandfathered", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (grandfathered items); 18 U.S.C. § 926A",
+    explanation: "A Virginia resident returning with their own grandfathered assault firearm (lawfully owned before July 1, 2026) may bring it back into Virginia. The grandfathering clause is tied to lawful ownership, not physical location. Federal safe-passage rules apply to the interstate leg.",
+    uncertainty: null, openQuestions: []
+  },
+  bring_into_va_post_purchase: {
+    id: "bring_into_va_post_purchase", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1, 18.2-309.1 (import/transfer ban); 18 U.S.C. § 922(a)(3)",
+    explanation: "A Virginia resident cannot purchase an assault firearm out of state and bring it into Virginia. HB217/SB749 bans import and transfer. Separately, federal law (18 U.S.C. § 922(a)(3)) prohibits a non-FFL from transporting a firearm purchased out of state into their state of residence. Both state and federal law prohibit this. Current injunctions block VSP enforcement but do not bind all local agencies.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  bring_into_va_nonresident_visiting: {
+    id: "bring_into_va_nonresident_visiting", status: "Unsettled",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (import ban); possible visitor exception: UNCONFIRMED; 18 U.S.C. § 926A",
+    explanation: "Whether a non-Virginia resident may bring their own assault firearm into Virginia for a visit (hunting, competition, family) is unclear. The import ban in HB217/SB749 may apply to any person bringing a covered firearm into the state. No explicit visitor/non-resident exception has been confirmed. Federal safe passage (18 U.S.C. § 926A) protects continuous interstate travel but may not cover an extended stay. The current injunctions bind VSP and six named Commonwealth's Attorneys but may not protect a non-resident visitor from other local enforcement.",
+    uncertainty: "No confirmed non-resident visitor exception exists in HB217/SB749 for bringing an assault firearm into Virginia. The import ban's application to non-residents temporarily entering the state has not been authoritatively addressed.",
+    openQuestions: [OQ.OQ4]
+  },
+  mag_keep_pre: {
+    id: "mag_keep_pre", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-308.1:9 (magazine grandfathering)",
+    explanation: "Keeping a magazine with capacity greater than 15 rounds that was lawfully owned before July 1, 2026 is permitted. The 2026 legislation grandfathers pre-existing high-capacity magazines. You may also bring your own pre-July-1 magazine back into Virginia.",
+    uncertainty: null, openQuestions: []
+  },
+  mag_sell_transfer_post: {
+    id: "mag_sell_transfer_post", status: "Prohibited",
+    authority: "HB217/SB749 – Va. Code §§ 18.2-308.1:9, 18.2-309.1; Class 1 misdemeanor; 3-year firearms disability",
+    explanation: "Buying, selling, trading, or importing a magazine with capacity greater than 15 rounds is prohibited after July 1, 2026. The grandfathering clause covers possession only. A grandfathered owner may not sell or transfer a high-capacity magazine to another private party in Virginia. Current injunctions block VSP enforcement but do not bind all local agencies.",
+    uncertainty: null, openQuestions: [OQ.OQ4]
+  },
+  mag_family_gift: {
+    id: "mag_family_gift", status: "Unsettled",
+    authority: "HB217/SB749 – Va. Code § 18.2-308.1:9; 18.2-287.4:1 (family carve-out applies to firearms; unclear whether it extends to magazines separately)",
+    explanation: "Whether the immediate-family gift carve-out that applies to assault firearms also separately covers grandfathered high-capacity magazines is not clear from available bill text. If magazines are governed solely by § 18.2-308.1:9 without the same family exception, the gift may be prohibited. Verify against the enrolled chaptered text before proceeding.",
+    uncertainty: "Whether a grandfathered high-capacity magazine may be gifted to an immediate family member under the same carve-out structure as assault firearms is unresolved in the bill text.",
+    openQuestions: [OQ.OQ4]
+  },
+  surrender_buyback: {
+    id: "surrender_buyback", status: "Permitted",
+    authority: "HB217/SB749 – Va. Code § 18.2-287.4:1 (surrender; transfer to law enforcement)",
+    explanation: "Voluntarily surrendering a grandfathered assault firearm to law enforcement or participating in a buyback program is permitted and is one of the explicitly recognized disposition options under HB217/SB749. No penalty attaches. The owner receives any offered compensation.",
+    uncertainty: null, openQuestions: []
+  },
+  prohibited_owner_transfer: {
+    id: "prohibited_owner_transfer", status: "Conditional",
+    authority: "HB93/SB38 (Chapter 533/534, signed April 10, 2026) – applies to ALL firearms, effective July 1, 2026; HB217/SB749 – Va. Code § 18.2-287.4:1 (assault firearm transfer restrictions govern what a prohibited person may do with a grandfathered assault firearm specifically)",
+    explanation: "HB93/SB38 applies when a person is served with a qualifying protective order or convicted of misdemeanor domestic assault. It requires them to, within 24 hours of service or conviction: (1) surrender all firearms to law enforcement, (2) sell or transfer all firearms to a licensed dealer (FFL), or (3) transfer all firearms to a non-prohibited person who is 21 or older and does not live in the same household. Within 48 hours, the person must file a written certification with the clerk of the issuing court listing all firearms transferred and the transferee's name and address. HB93/SB38 applies to all firearms — not just assault firearms. For a grandfathered assault firearm specifically, any transfer must also comply with HB217/SB749's restrictions: transfer to FFL or to an eligible immediate family member are the most likely permissible options within the 24-hour window. Retention after the deadline is a separate offense.",
+    uncertainty: null, openQuestions: []
+  }
+};
+
+// =============================================================================
+// ROUTING LOGIC
+// =============================================================================
+function resolveRule(answers) {
+  const { action, timing, age, recipient, transportContext, magAction } = answers;
+  const g = timing === "pre";
+
+  if (action === "keep") {
+    if (age === "21plus")  return g ? "keep_pre_grandfathered_21plus" : "keep_post_21plus";
+    if (age === "1820")    return g ? "keep_pre_grandfathered_1820"   : "keep_post_1820";
+    if (age === "under18") return g ? "keep_pre_grandfathered_under18": "keep_post_under18";
+  }
+  if (action === "gift") {
+    if (!g) return "gift_family_post_july1";
+    if (recipient === "family") {
+      if (age === "under18") return "keep_post_under18";
+      return age === "1820" ? "gift_family_grandfathered_recipient_1820" : "gift_family_grandfathered_21plus";
+    }
+    if (recipient === "ffl") return "sell_ffl";
+    if (recipient === "outofstate") return "sell_outofstate_buyer";
+    if (recipient === "leo") return "surrender_buyback";
+    return "gift_nonfamily_va";
+  }
+  if (action === "sell") {
+    if (!g) return "keep_post_21plus";
+    if (recipient === "ffl") return "sell_ffl";
+    if (recipient === "outofstate") return "sell_outofstate_buyer";
+    if (recipient === "family") return "sell_family_va";
+    if (recipient === "leo") return "surrender_buyback";
+    return "sell_private_va";
+  }
+  if (action === "inherit") return recipient === "family" ? "inherit_family" : "inherit_nonfamily_devisee";
+  if (action === "bequeath") return "bequeath_intent";
+  if (action === "transport") {
+    if (transportContext === "public")  return "transport_public_grandfathered";
+    if (transportContext === "vehicle") return "transport_vehicle_grandfathered";
+    if (transportContext === "private") return "transport_private_land";
+    if (transportContext === "hunting") return "transport_hunting";
+    return "transport_public_grandfathered";
+  }
+  if (action === "outofstate") return "take_outofstate";
+  if (action === "bring_into_va") {
+    if (recipient === "own_grandfathered") return "bring_into_va_own_grandfathered";
+    if (recipient === "post_purchase")     return "bring_into_va_post_purchase";
+    return "bring_into_va_nonresident_visiting";
+  }
+  if (action === "mag_transfer") {
+    if (magAction === "keep")          return "mag_keep_pre";
+    if (magAction === "sell_transfer") return "mag_sell_transfer_post";
+    if (magAction === "family_gift")   return "mag_family_gift";
+    return "mag_sell_transfer_post";
+  }
+  if (action === "surrender") return "surrender_buyback";
+  return "not_covered";
+}
+
+// =============================================================================
+// STATE MACHINE
+// =============================================================================
+const STEPS = { MODEL_LOOKUP:"model_lookup", PRESCREEN:"prescreen", AGE:"age", TIMING:"timing", ACTION:"action", RECIPIENT:"recipient", TRANSPORT:"transport", BRING_VA:"bring_va", MAG:"mag", RESULT:"result" };
+
+let state = { step:STEPS.MODEL_LOOKUP, covered:null, modelName:null, modelStatus:null, features:{}, fixedMagOver15:false, isSemiAuto:false, age:null, timing:null, action:null, recipient:null, transportContext:null, magAction:null, history:[] };
+
+function resetState() {
+  state = { step:STEPS.MODEL_LOOKUP, covered:null, modelName:null, modelStatus:null, features:{}, fixedMagOver15:false, isSemiAuto:false, age:null, timing:null, action:null, recipient:null, transportContext:null, magAction:null, history:[] };
+  render();
+}
+
+function goBack() {
+  if (state.history.length > 0) { Object.assign(state, state.history.pop()); render(); }
+}
+
+function pushHistory() {
+  state.history.push({ step:state.step, covered:state.covered, modelName:state.modelName, modelStatus:state.modelStatus, features:{...state.features}, fixedMagOver15:state.fixedMagOver15, isSemiAuto:state.isSemiAuto, age:state.age, timing:state.timing, action:state.action, recipient:state.recipient, transportContext:state.transportContext, magAction:state.magAction });
+}
+
+// =============================================================================
+// FIREARMS DATABASE
+// status: "covered" | "not_covered" | "varies"
+// "covered"     — all standard configurations are covered; skip feature quiz
+// "not_covered" — not covered; skip to not_covered result
+// "varies"      — depends on configuration; go to feature quiz with note
+// =============================================================================
+const FIREARMS_DB = [
+  // ── AR-15 / AR-10 / M16 / M4 pattern ──
+  { names:["ar-15","ar15","ar 15","ar platform","armalite","m16","m4 carbine","m4a1","colt le","colt le6920","colt sp1","colt m4","colt ar"], display:"AR-15 / M16 / M4 pattern (any brand)", status:"covered", note:"All standard AR-15 / AR-10 variants have a pistol grip and detachable magazine — covered in every configuration." },
+  { names:["daniel defense","ddm4","mk18","m4v7"], display:"Daniel Defense (DDM4, MK18, M4V7)", status:"covered", note:"AR-platform; pistol grip and detachable magazine — covered." },
+  { names:["bravo company","bcm recce","bcm"], display:"Bravo Company Manufacturing (BCM)", status:"covered", note:"AR-platform; covered." },
+  { names:["palmetto state armory","psa ak","psa ar","pa-15","pa15","psa gf3"], display:"Palmetto State Armory (PA-15, AK-series)", status:"covered", note:"AR/AK-platform; covered." },
+  { names:["dpms oracle","dpms gii","dpms panther","dpms"], display:"DPMS (Oracle, GII, Panther)", status:"covered", note:"AR-platform; covered." },
+  { names:["rock river arms","lar-15","lar15","rra"], display:"Rock River Arms (LAR-15)", status:"covered", note:"AR-platform; covered." },
+  { names:["smith wesson m&p15","m&p15","m&p sport","m&p 15","sw m&p","s&w m&p"], display:"Smith & Wesson M&P15 / M&P Sport", status:"covered", note:"AR-platform; pistol grip and detachable magazine — covered." },
+  { names:["ruger ar-556","ruger ar556","ar-556","ar556"], display:"Ruger AR-556", status:"covered", note:"AR-platform; covered." },
+  { names:["springfield saint"], display:"Springfield Armory Saint", status:"covered", note:"AR-platform; covered." },
+  { names:["aero precision m4e1","m4e1"], display:"Aero Precision M4E1", status:"covered", note:"AR-platform; covered." },
+  { names:["bushmaster xm15","bushmaster qrc","bushmaster carbon 15","bushmaster"], display:"Bushmaster (XM15, QRC, Carbon 15)", status:"covered", note:"AR-platform; covered." },
+  { names:["stag arms"], display:"Stag Arms", status:"covered", note:"AR-platform; covered." },
+  { names:["windham weaponry"], display:"Windham Weaponry", status:"covered", note:"AR-platform; covered." },
+  { names:["sig sauer m400","sig m400","m400 tread"], display:"Sig Sauer M400 / M400 Tread", status:"covered", note:"AR-platform; pistol grip and detachable magazine — covered." },
+  { names:["lwrc ic-a5","lwrc"], display:"LWRC IC-A5", status:"covered", note:"AR-platform; covered." },
+  { names:["larue tactical","larue"], display:"LaRue Tactical", status:"covered", note:"AR-platform; covered." },
+  { names:["noveske"], display:"Noveske", status:"covered", note:"AR-platform; covered." },
+  { names:["pof revolution","pof p415","pof usa","proof of function"], display:"POF-USA (Revolution, P415)", status:"covered", note:"AR-platform; covered." },
+  { names:["radical firearms"], display:"Radical Firearms", status:"covered", note:"AR-platform; covered." },
+  { names:["anderson am-15","am-15","anderson arms","anderson manufacturing"], display:"Anderson Manufacturing AM-15", status:"covered", note:"AR-platform; covered." },
+  // ── AK-pattern ──
+  { names:["ak-47","ak47","ak 47","ak-74","ak74","ak 74","ak pattern","akm"], display:"AK-47 / AK-74 pattern (any brand)", status:"covered", note:"All standard AK-pattern rifles have a pistol grip and detachable magazine — covered." },
+  { names:["wasr-10","wasr10","wasr 10"], display:"WASR-10", status:"covered", note:"AK-platform; covered." },
+  { names:["century arms vska","vska","century arms ras47","ras47","century arms c39","c39v2","century arms"], display:"Century Arms (VSKA, RAS47, C39v2)", status:"covered", note:"AK-platform; covered." },
+  { names:["zastava zpapm70","zpap","zastava m70","zastava n-pap","zastava npap","zastava"], display:"Zastava (ZPAP M70, N-PAP)", status:"covered", note:"AK-platform; covered." },
+  { names:["riley defense rak","riley defense"], display:"Riley Defense RAK-47", status:"covered", note:"AK-platform; covered." },
+  { names:["arsenal slr","arsenal sa","arsenal ak","arsenal inc"], display:"Arsenal Inc. (SLR, SA)", status:"covered", note:"AK-platform; covered." },
+  { names:["kalashnikov usa","kr-103","ku-104"], display:"Kalashnikov USA (KR-103)", status:"covered", note:"AK-platform; covered." },
+  { names:["wbp fox","wbp jack","wbp ak"], display:"WBP (Fox, Jack)", status:"covered", note:"AK-platform; covered." },
+  // ── Other definitively covered platforms ──
+  { names:["iwi tavor sar","tavor sar","iwi tavor","tavor"], display:"IWI Tavor SAR", status:"covered", note:"Bullpup; pistol grip; detachable magazine — covered." },
+  { names:["iwi x95","x95","iwi x-95"], display:"IWI X95", status:"covered", note:"Bullpup; pistol grip; detachable magazine — covered." },
+  { names:["iwi galil ace","galil ace","iwi galil"], display:"IWI Galil ACE", status:"covered", note:"Pistol grip; detachable magazine; folding stock — covered." },
+  { names:["hk mr556","mr556","mr556a1","heckler koch mr556"], display:"HK MR556A1", status:"covered", note:"AR-platform; covered." },
+  { names:["hk mr762","mr762","mr762a1","heckler koch mr762"], display:"HK MR762A1", status:"covered", note:"AR-platform; covered." },
+  { names:["fn scar 16","scar 16s","fn scar 17","scar 17s","fn scar"], display:"FN SCAR 16S / 17S", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["sig mcx","sig sauer mcx","mcx rattler","mcx spear","mcx virtus"], display:"Sig Sauer MCX (all variants)", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["sig mpx","sig sauer mpx"], display:"Sig Sauer MPX", status:"covered", note:"Pistol grip; detachable magazine — covered." },
+  { names:["cz bren 2","cz bren2","bren 2 ms","bren 2"], display:"CZ Bren 2 MS", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["steyr aug","aug a3","steyr aug a3"], display:"Steyr AUG", status:"covered", note:"Bullpup; pistol grip (thumbhole); detachable magazine — covered." },
+  { names:["kel-tec sub-2000","sub-2000","sub2000","keltec sub 2000","sub 2000"], display:"Kel-Tec Sub-2000", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["kel-tec rdb","keltec rdb","rdb"], display:"Kel-Tec RDB", status:"covered", note:"Bullpup; pistol grip; detachable magazine — covered." },
+  { names:["ruger mini-14 tactical","mini-14 tactical","mini 14 tactical","mini14 tactical"], display:"Ruger Mini-14 Tactical", status:"covered", note:"Pistol grip stock; detachable magazine — covered." },
+  { names:["robinson xcr","xcr-l","xcr-m","robinson armament"], display:"Robinson Armament XCR", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["beretta arx100","arx100","arx 100"], display:"Beretta ARX100", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["fn fs2000","fs2000","fn fs 2000"], display:"FN FS2000", status:"covered", note:"Bullpup; pistol grip; detachable magazine — covered." },
+  { names:["desert tech mdr","desert tech mdrx","mdr"], display:"Desert Tech MDR / MDRx", status:"covered", note:"Bullpup; pistol grip; detachable magazine — covered." },
+  { names:["christensen arms ca-15","christensen arms","ca-15 g2"], display:"Christensen Arms CA-15", status:"covered", note:"AR-platform; covered." },
+  { names:["ruger precision rifle","ruger precision","rpr"], display:"Ruger Precision Rifle", status:"not_covered", note:"Bolt-action; not covered by definition. The law applies only to semi-automatic firearms." },
+  { names:["hk g36","hk g36c","hk slb2000","heckler koch g36"], display:"HK G36 / SLB2000", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["kel-tec su-16","su-16","su16","keltec su16"], display:"Kel-Tec SU-16", status:"varies", note:"SU-16C (folding stock) = covered. SU-16A/B in fixed-stock configuration may not be covered. Check which variant you have." },
+  { names:["springfield hellion","hellion"], display:"Springfield Armory Hellion", status:"covered", note:"Bullpup; pistol grip; folding stock; detachable magazine — covered." },
+  { names:["mossberg mvp","mvp patrol","mvp flex"], display:"Mossberg MVP", status:"not_covered", note:"Bolt-action — not covered by definition." },
+  { names:["mossberg 715t","715t"], display:"Mossberg 715T", status:"covered", note:"AR-styled semi-automatic; pistol grip; detachable magazine — covered. (.22 LR version is rimfire and not covered; verify your caliber.)" },
+  { names:["kriss vector","kriss usa","vector crb"], display:"KRISS Vector CRB", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["ruger mini-30","mini-30","mini 30"], display:"Ruger Mini-30", status:"varies", note:"Ranch configuration (traditional stock) = not covered. Tactical configuration (pistol grip) = covered. Check your stock." },
+  { names:["fn 15","fn15","fn military collector","fn patrol carbine"], display:"FN 15 (Patrol, Military Collector, etc.)", status:"covered", note:"AR-platform; covered." },
+  { names:["lwrc six8","six8","lwrc repr"], display:"LWRC REPR / Six8", status:"covered", note:"AR-platform; covered." },
+  { names:["mega arms","mega maten","mega gtar"], display:"Mega Arms", status:"covered", note:"AR-platform; covered." },
+  { names:["wilson combat ar","wilson combat recon","wilson combat ber"], display:"Wilson Combat (AR variants)", status:"covered", note:"AR-platform; covered." },
+  { names:["springfield m1a scout","m1a scout squad","m1a precision"], display:"Springfield M1A Scout/Precision", status:"varies", note:"Depends on stock configuration. Traditional stock = not covered. Pistol-grip chassis = covered." },
+  { names:["hk usc","hk usc45","universal self-loading carbine"], display:"HK USC (Universal Self-Loading Carbine)", status:"not_covered", note:"Semi-automatic; centerfire; detachable magazine — but the USC uses a thumbhole stock, which IS a covered feature. Reclassify as covered if your USC has a thumbhole stock; use the feature checklist to confirm." },
+  { names:["hk vp9","hk sp5","hk sp5k"], display:"HK SP5 / VP9", status:"not_covered", note:"These are pistols, not rifles. Virginia's 2026 assault firearm law targets rifles. Normal firearm rules apply." },
+  { names:["cz scorpion evo","scorpion evo 3","cz scorpion"], display:"CZ Scorpion Evo 3 (carbine)", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["b&t apc","b&t apc9","bt apc"], display:"B&T APC (carbine)", status:"covered", note:"Pistol grip; folding stock; detachable magazine — covered." },
+  { names:["troy defense","troy a3","troy car"], display:"Troy Defense", status:"covered", note:"AR-platform; covered." },
+  { names:["les baer custom","les baer ar"], display:"Les Baer Custom (AR)", status:"covered", note:"AR-platform; covered." },
+  { names:["colt canada","diemaco"], display:"Colt Canada / Diemaco", status:"covered", note:"AR-platform; covered." },
+  { names:["windham weaponry src","windham src-308"], display:"Windham Weaponry SRC / SRC-308", status:"covered", note:"AR-platform; covered." },
+  { names:["patriot ordnance factory","pof"], display:"Patriot Ordnance Factory (POF)", status:"covered", note:"AR-platform; covered." },
+  { names:["barrett m82","barrett m107","barrett rec7","barrett rec10","barrett"], display:"Barrett (REC7, REC10, M82, M107)", status:"covered", note:"REC7/REC10 = AR-platform; covered. M82/M107 (.50 BMG semi-auto) = detachable magazine; no standard pistol grip in the AR sense, but these are large-caliber anti-materiel rifles — use the feature checklist to confirm your specific configuration." },
+  { names:["fn fnc","fn fal","fn fal dsa","dsa sa58"], display:"FN FAL / DSA SA58", status:"varies", note:"Standard FAL/SA58 (traditional stock) = not covered. Para variants with folding stock = covered. Check your configuration." },
+  { names:["vepr","molot vepr","vepr-12"], display:"Molot Vepr (rifle variants)", status:"covered", note:"AK-platform; pistol grip; detachable magazine — covered." },
+  { names:["saiga","izhmash saiga","saiga ak"], display:"Izhmash Saiga (converted)", status:"varies", note:"Factory Saiga (traditional sporting stock, no pistol grip) = not covered. Converted/sporterized Saiga with pistol grip = covered. Check your configuration." },
+  { names:["kahr arms","kahr cm","kahr tp"], display:"Kahr Arms (rifles)", status:"not_covered", note:"Kahr's rifle-format products generally use traditional configurations. Use the feature checklist to confirm your specific model." },
+  { names:["browning blr","browning lever","blr lightweight"], display:"Browning BLR", status:"not_covered", note:"Lever-action — not covered by definition." },
+  { names:["henry ax","henry ax410","henry all weather"], display:"Henry (all models)", status:"not_covered", note:"Lever-action or pump-action — not covered by definition." },
+  { names:["winchester sx4","winchester super x","winchester sxp"], display:"Winchester SX4 / SXP", status:"not_covered", note:"These are shotguns. Virginia's 2026 assault firearm law targets rifles, not shotguns. Normal firearm rules apply." },
+  { names:["howa 1500","howa mini","legacy sports howa"], display:"Howa 1500", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["tikka t1x","tikka t3 tac","tikka t3 varmint"], display:"Tikka (all models)", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["remington 783","remington 783 compact"], display:"Remington 783", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["cz 527","cz 557","cz 600"], display:"CZ 527 / 557 / 600", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["ruger american rifle","ruger american","ruger american predator"], display:"Ruger American Rifle", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["ruger gunsite scout","ruger scout rifle"], display:"Ruger Gunsite Scout", status:"not_covered", note:"Bolt-action — not covered." },
+  // ── Varies by configuration ──
+  { names:["ruger mini-14","mini-14","mini14","mini 14"], display:"Ruger Mini-14 (Ranch or Tactical?)", status:"varies", note:"Ranch Rifle (traditional wood/synthetic stock) = not covered. Tactical variant (pistol grip) = covered. The tool needs to know which stock configuration your Mini-14 has." },
+  { names:["springfield m1a","m1a","m1a socom","m1a scout","m1a standard"], display:"Springfield Armory M1A", status:"varies", note:"Standard M1A (traditional stock, no pistol grip) = not covered. Variants with a pistol-grip chassis = likely covered. Check your configuration." },
+  { names:["sks"], display:"SKS", status:"varies", note:"Standard SKS (fixed 10-round magazine, traditional stock) = not covered. Variants with a detachable magazine or pistol-grip stock may be covered. Check your configuration." },
+  { names:["ruger pc carbine","pc carbine","pc-carbine","ruger pc9"], display:"Ruger PC Carbine", status:"varies", note:"Standard configuration (traditional stock) = not covered. Versions with a pistol-grip chassis may be covered. Check your stock." },
+  // ── Not covered ──
+  { names:["m1 garand","m1garand","garand"], display:"M1 Garand", status:"not_covered", note:"Uses an en bloc clip (not a detachable magazine); no pistol grip in standard configuration — not covered." },
+  { names:["m14","m-14","m14 rifle"], display:"M14", status:"not_covered", note:"Traditional stock; no pistol grip in standard configuration — not covered. Civilian M14s with pistol-grip chassis would differ." },
+  { names:["m1 carbine","m1carbine","usgi carbine","m1 30 carbine"], display:"M1 Carbine", status:"not_covered", note:"Traditional stock; semi-automatic; detachable magazine — but no pistol grip or other covered feature in standard configuration. Not covered." },
+  { names:["ruger 10/22","ruger 1022","10/22","1022","ten twenty two"], display:"Ruger 10/22", status:"not_covered", note:"Fires .22 LR, a rimfire cartridge. Virginia's 2026 law covers only semi-automatic centerfire rifles — rimfire is excluded by definition." },
+  { names:["beretta cx4 storm","cx4 storm","beretta cx4"], display:"Beretta CX4 Storm", status:"not_covered", note:"Traditional stock; no pistol grip or other covered features in standard configuration — not covered." },
+  { names:["browning bar","browning mark iii","browning bar mk3","browning bar safari"], display:"Browning BAR (hunting)", status:"not_covered", note:"Semi-automatic centerfire hunting rifle; traditional Monte Carlo stock; no pistol grip or other covered features — not covered." },
+  { names:["remington 700","remington model 700","rem 700"], display:"Remington 700", status:"not_covered", note:"Bolt-action — not covered by definition. The law applies only to semi-automatic firearms." },
+  { names:["remington 7600","rem 7600"], display:"Remington 7600", status:"not_covered", note:"Pump-action — not covered by definition." },
+  { names:["winchester model 70","winchester 70","win model 70"], display:"Winchester Model 70", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["savage 110","savage axis","savage 110 tactical","savage arms"], display:"Savage 110 / Axis", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["tikka t3","tikka t3x","tikka"], display:"Tikka T3 / T3x", status:"not_covered", note:"Bolt-action — not covered." },
+  { names:["henry rifle","henry golden boy","henry big boy","henry side gate","henry repeating"], display:"Henry Repeating Arms", status:"not_covered", note:"Lever-action — not covered by definition. The law applies only to semi-automatic firearms." },
+  { names:["marlin 336","marlin 1894","marlin lever"], display:"Marlin 336 / 1894", status:"not_covered", note:"Lever-action — not covered." },
+  { names:["winchester 1894","winchester model 94","win model 94"], display:"Winchester Model 1894", status:"not_covered", note:"Lever-action — not covered." },
+];
+
+function findFirearms(query) {
+  const q = query.toLowerCase().trim();
+  if (q.length < 2) return [];
+  return FIREARMS_DB.filter(f =>
+    f.names.some(n => n.includes(q) || q.includes(n)) ||
+    f.display.toLowerCase().includes(q)
+  ).slice(0, 6);
+}
+
+// =============================================================================
+// DOM HELPERS
+// =============================================================================
+function el(tag, attrs, ...children) {
+  const e = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => {
+    if (k==="className") e.className=v;
+    else if (k==="onclick") e.onclick=v;
+    else if (k==="style") e.style.cssText=v;
+    else if (k==="disabled") e.disabled=v;
+    else if (k==="type") e.type=v;
+    else if (k==="checked") e.checked=v;
+    else if (k==="id") e.id=v;
+    else if (k==="for") e.htmlFor=v;
+    else e.setAttribute(k,v);
+  });
+  children.flat().forEach(c => { if (c!=null) e.appendChild(typeof c==="string" ? document.createTextNode(c) : c); });
+  return e;
+}
+function div(cls,...children) { return el("div",{className:cls},...children); }
+function p(cls,html)          { const e=el("p",cls?{className:cls}:null); e.innerHTML=html; return e; }
+function h2(text)             { return el("h2",null,text); }
+
+function makeCard(stepLabel, title, desc, body) {
+  return div("card",
+    div("step-label", stepLabel),
+    h2(title),
+    desc ? p("desc", desc) : null,
+    body
+  );
+}
+
+function optBtn(title, sub, onclick) {
+  const btn = el("button", {className:"opt-btn", onclick});
+  btn.appendChild(div("", el("span",{className:"opt-title"},title), sub ? el("span",{className:"opt-sub"},sub) : null));
+  return btn;
+}
+
+function progress(pct) {
+  const total = 6;
+  const done  = pct === 100 ? total : Math.round((pct / 100) * total);
+  const wrap  = div("progress-bar-wrap");
+  for (let i = 0; i < total; i++) {
+    const cls = i < done - 1 ? "progress-seg progress-seg--done"
+              : i === done - 1 ? "progress-seg progress-seg--active"
+              : "progress-seg";
+    wrap.appendChild(el("div", {className: cls}));
+  }
+  return wrap;
+}
+
+function breadcrumb(items) {
+  const bc = div("breadcrumb");
+  items.forEach((item, i) => {
+    if (i > 0) bc.appendChild(document.createTextNode(" › "));
+    bc.appendChild(el("span", null, item));
+  });
+  return bc;
+}
+
+// =============================================================================
+// RENDER FUNCTIONS
+// =============================================================================
+function renderModelLookup() {
+  const resultsDiv = div("model-results");
+  resultsDiv.id = "model-results";
+
+  const input = el("input", {
+    type: "text",
+    className: "model-search",
+    placeholder: "e.g. AR-15, AK-47, Ruger Mini-14, SCAR 17..."
+  });
+
+  function chipLabel(status) {
+    const map = { covered:"Covered", not_covered:"Not Covered", varies:"Depends on Config" };
+    return map[status] || status;
+  }
+
+  function rebuildResults(q) {
+    resultsDiv.innerHTML = "";
+    const hits = findFirearms(q);
+    hits.forEach(f => {
+      const btn = el("button", {
+        className: "model-result-item",
+        onclick: () => {
+          pushHistory();
+          state.modelName   = f.display;
+          state.modelStatus = f.status;
+          if (f.status === "covered") {
+            state.covered = true;
+            state.step    = STEPS.AGE;
+          } else if (f.status === "not_covered") {
+            state.covered = false;
+            state.action  = "__not_covered";
+            state.step    = STEPS.RESULT;
+          } else {
+            state.covered = null;
+            state.step    = STEPS.PRESCREEN;
+          }
+          render();
+        }
+      });
+      const left = div("");
+      left.appendChild(el("span", {className:"model-result-name"}, f.display));
+      left.appendChild(el("span", {className:"model-result-note"}, f.note));
+      const chip = el("span", {className:"model-chip model-chip-" + f.status}, chipLabel(f.status));
+      btn.appendChild(left);
+      btn.appendChild(chip);
+      resultsDiv.appendChild(btn);
+    });
+  }
+
+  input.oninput = () => rebuildResults(input.value);
+
+  const skipBtn = el("button", {
+    className: "model-skip-btn",
+    onclick: () => {
+      pushHistory();
+      state.modelName   = null;
+      state.modelStatus = null;
+      state.step = STEPS.PRESCREEN;
+      render();
+    }
+  }, "My firearm isn't listed — use the feature checklist instead →");
+
+  const body = div("", input, resultsDiv, skipBtn);
+
+  return div("", progress(10),
+    makeCard("Step 1 — Firearm Lookup", "What make and model is this firearm?",
+      "Start typing to search. Select your firearm to skip straight to the question that matters, or scroll down to use the feature checklist if yours isn't listed.",
+      body)
+  );
+}
+
+function renderPrescreen() {
+  const features = [
+    { key:"pistol_grip",      label:"Pistol grip or thumbhole stock that protrudes conspicuously beneath the action" },
+    { key:"folding_stock",    label:"Folding, telescoping, collapsible, or adjustable-length stock" },
+    { key:"threaded_barrel",  label:"Threaded barrel capable of accepting a suppressor, flash suppressor, muzzle brake, or muzzle compensator (see note below)" },
+    { key:"forward_grip",     label:"Forward pistol grip or second handgrip for the non-trigger hand" },
+    { key:"grenade_launcher", label:"Grenade or flare launcher mounted under the barrel" }
+  ];
+
+  const checkList = el("ul", {className:"check-list"});
+
+  const semiCb = el("input", {type:"checkbox", id:"semi_auto"});
+  semiCb.onchange = () => { state.isSemiAuto = semiCb.checked; };
+  if (state.isSemiAuto) semiCb.checked = true;
+
+  const semiWrap = div("",
+    p("desc", "<strong>First:</strong> Is this a semi-automatic, centerfire rifle with a detachable magazine? (Required for the feature test. Not required if you select the fixed-mag option below.)"),
+    el("label", {style:"display:flex;align-items:flex-start;gap:10px;font-size:0.875rem;margin-bottom:16px;"}, semiCb, "Yes, it is a semi-automatic centerfire rifle with a detachable magazine")
+  );
+
+  features.forEach(f => {
+    const cb = el("input", {type:"checkbox", id:"feat_"+f.key});
+    cb.onchange = () => { state.features[f.key] = cb.checked; };
+    if (state.features[f.key]) cb.checked = true;
+    checkList.appendChild(el("li", null, el("label", {for:"feat_"+f.key}, cb, f.label)));
+  });
+
+  const fixedCb = el("input", {type:"checkbox", id:"fixed_mag"});
+  fixedCb.onchange = () => { state.fixedMagOver15 = fixedCb.checked; };
+  if (state.fixedMagOver15) fixedCb.checked = true;
+  checkList.appendChild(el("li", null, el("label", {for:"fixed_mag"}, fixedCb, "OR: Fixed (non-detachable) magazine with capacity greater than 15 rounds")));
+
+  const continueBtn = el("button", {
+    className: "continue-btn",
+    onclick: () => {
+      pushHistory();
+      const hasFeature = Object.values(state.features).some(Boolean);
+      const covered = (state.isSemiAuto && hasFeature) || state.fixedMagOver15;
+      state.covered = covered;
+      if (!covered) { state.step = STEPS.RESULT; state.action = "__not_covered"; }
+      else { state.step = STEPS.AGE; }
+      render();
+    }
+  }, "Continue");
+
+  const excludedNote = p("desc", "<strong>Not covered by definition:</strong> bolt-action, pump-action, lever-action, or slide-action firearms; antique firearms (manufactured before 1899 or replicas using fixed-ammunition not commercially available); permanently inoperable weapons.");
+
+  const oq6Note = p("desc", "<strong>Threaded barrel note:</strong> The enrolled text may include muzzle brakes and muzzle compensators alongside suppressors and flash hiders as devices that trigger the threaded barrel feature. A threaded muzzle for a muzzle brake alone may be sufficient. Verify against CHAP1106 at lis.virginia.gov before treating a threaded-barrel firearm as not covered.");
+
+  const scopeNote = p("desc", "<strong>Rifles only:</strong> This checklist applies to rifles. HB217/SB749 also covers semi-automatic centerfire pistols (two or more qualifying features) and semi-automatic shotguns (one or more qualifying features, or fixed magazine exceeding 15 rounds). If the firearm is a pistol or shotgun, consult a licensed Virginia attorney — this result may not apply.");
+
+  let variesNote = null;
+  if (state.modelStatus === "varies" && state.modelName) {
+    variesNote = div("model-varies-note",
+      document.createTextNode("The “" + state.modelName + "” comes in multiple configurations. Answer the questions below to determine whether your specific configuration is covered.")
+    );
+  }
+
+  const body = div("", variesNote, semiWrap, p("desc", "<strong>Then:</strong> Check at least one listed feature, or the fixed-mag option:"), checkList, el("br"), excludedNote, oq6Note, scopeNote, continueBtn);
+
+  const stepLabel = state.modelStatus === "varies" ? "Step 1 (continued) — Feature Check" : "Step 1 of 6 — Firearm Coverage";
+  return div("", progress(10), makeCard(stepLabel, "Does this firearm qualify as an assault firearm under the 2026 Virginia statute?", null, body));
+}
+
+function renderAge() {
+  return div("", progress(25), breadcrumb(["Covered firearm"]),
+    makeCard("Step 2 of 6 — Owner Age", "What is the owner's current age?",
+      "Age affects purchase rights and some transfer rules under HB1525.",
+      div("options-grid",
+        optBtn("Under 18",   "Possession and transfer rules are most restrictive", () => { pushHistory(); state.age="under18"; state.step=STEPS.TIMING; render(); }),
+        optBtn("18 to 20",   "May possess pre-7/1/2026 items but cannot purchase new assault firearms", () => { pushHistory(); state.age="1820"; state.step=STEPS.TIMING; render(); }),
+        optBtn("21 or older","Full ownership rights subject to ban and grandfathering rules", () => { pushHistory(); state.age="21plus"; state.step=STEPS.TIMING; render(); })
+      )
+    )
+  );
+}
+
+function renderTiming() {
+  return div("", progress(40), breadcrumb(["Covered firearm", ageLabel()]),
+    makeCard("Step 3 of 6 — Acquisition Timing", "When did the current owner acquire this firearm?",
+      "Items lawfully owned before July 1, 2026 are grandfathered; new acquisitions on or after that date are generally prohibited.",
+      div("options-grid",
+        optBtn("Lawfully owned before July 1, 2026", "Grandfathered — continued possession is lawful", () => { pushHistory(); state.timing="pre"; state.step=STEPS.ACTION; render(); }),
+        optBtn("Acquired on or after July 1, 2026",  "Not grandfathered — acquisition itself may be unlawful", () => { pushHistory(); state.timing="post"; state.step=STEPS.ACTION; render(); })
+      )
+    )
+  );
+}
+
+function renderAction() {
+  return div("", progress(55), breadcrumb(["Covered firearm", ageLabel(), timingLabel()]),
+    makeCard("Step 4 of 6 — Intended Action", "What action is the owner considering?", null,
+      div("options-grid",
+        optBtn("Keep and use at home or at a range",           "Continued possession and personal use", () => { pushHistory(); state.action="keep"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Gift (no payment)",                            "Transfer as a gift to another person", () => { pushHistory(); state.action="gift"; state.step=STEPS.RECIPIENT; render(); }),
+        optBtn("Sell",                                         "Paid transfer to another party", () => { pushHistory(); state.action="sell"; state.step=STEPS.RECIPIENT; render(); }),
+        optBtn("Inherit or bequeath",                          "Receive by inheritance, or plan to bequeath in a will", () => { pushHistory(); state.action="bequeath_or_inherit"; state.step=STEPS.RECIPIENT; render(); }),
+        optBtn("Transport or carry",                           "Move the firearm from one place to another, or carry it", () => { pushHistory(); state.action="transport"; state.step=STEPS.TRANSPORT; render(); }),
+        optBtn("Take out of Virginia",                         "Travel with the firearm to another state", () => { pushHistory(); state.action="outofstate"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Bring into Virginia",                          "Bring a firearm into Virginia from out of state", () => { pushHistory(); state.action="bring_into_va"; state.step=STEPS.BRING_VA; render(); }),
+        optBtn("High-capacity magazine transfer",              "Transfer, sell, or keep a magazine with capacity greater than 15 rounds", () => { pushHistory(); state.action="mag_transfer"; state.step=STEPS.MAG; render(); }),
+        optBtn("Surrender or buyback",                         "Voluntarily surrender to law enforcement or a buyback program", () => { pushHistory(); state.action="surrender"; state.step=STEPS.RESULT; render(); })
+      )
+    )
+  );
+}
+
+function renderRecipient() {
+  if (state.action === "bequeath_or_inherit") {
+    return div("", progress(70), breadcrumb(["Covered firearm", ageLabel(), timingLabel(), "Inherit / Bequeath"]),
+      makeCard("Step 5 of 6 — Transaction Type", "Is this an incoming inheritance or an outgoing bequest?", null,
+        div("options-grid",
+          optBtn("Receiving by inheritance (I am the heir)",       "Someone died and left this firearm to me", () => { pushHistory(); state.action="inherit"; state.step=STEPS.RECIPIENT; render(); }),
+          optBtn("Bequeathing in my will (I am the owner)", "I want to leave this firearm to someone in my will or estate", () => { pushHistory(); state.action="bequeath"; state.step=STEPS.RESULT; render(); })
+        )
+      )
+    );
+  }
+
+  const isInherit = state.action === "inherit";
+  const opts = isInherit ? [
+    optBtn("Immediate family member",    "Spouse, child, parent, grandparent, or sibling", () => { pushHistory(); state.recipient="family"; state.step=STEPS.RESULT; render(); }),
+    optBtn("Non-family devisee or legatee","Named in will but not an immediate family member", () => { pushHistory(); state.recipient="nonfamily_devisee"; state.step=STEPS.RESULT; render(); })
+  ] : [
+    optBtn("Immediate family member",    "Spouse, child, parent, grandparent, or sibling", () => { pushHistory(); state.recipient="family"; state.step=STEPS.RESULT; render(); }),
+    optBtn("Friend or other Virginia resident","Non-family person in Virginia", () => { pushHistory(); state.recipient="friend"; state.step=STEPS.RESULT; render(); }),
+    optBtn("Licensed dealer (FFL)",      "Federally licensed firearms dealer", () => { pushHistory(); state.recipient="ffl"; state.step=STEPS.RESULT; render(); }),
+    optBtn("Out-of-state buyer",         "Person who will take possession in another state", () => { pushHistory(); state.recipient="outofstate"; state.step=STEPS.RESULT; render(); }),
+    optBtn("Law enforcement",            "Surrender to a law enforcement agency", () => { pushHistory(); state.recipient="leo"; state.step=STEPS.RESULT; render(); })
+  ];
+
+  return div("", progress(70), breadcrumb(["Covered firearm", ageLabel(), timingLabel(), actionLabel()]),
+    makeCard("Step 5 of 6 — Recipient", "Who is the recipient?", null, div("options-grid", ...opts))
+  );
+}
+
+function renderTransport() {
+  return div("", progress(70), breadcrumb(["Covered firearm", ageLabel(), timingLabel(), "Transport"]),
+    makeCard("Step 5 of 6 — Transport Context", "Where or how will the firearm be transported?", null,
+      div("options-grid",
+        optBtn("Public place — street, sidewalk, park, public building", "Carrying openly or concealed in public", () => { pushHistory(); state.transportContext="public"; state.step=STEPS.RESULT; render(); }),
+        optBtn("In a vehicle on public roads",   "Driving with the firearm in or on the vehicle", () => { pushHistory(); state.transportContext="vehicle"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Private land (with permission)", "Moving the firearm on private property where you are authorized", () => { pushHistory(); state.transportContext="private"; state.step=STEPS.RESULT; render(); }),
+        optBtn("To or from a hunting or shooting activity", "Travel associated with lawful hunting or a shooting range", () => { pushHistory(); state.transportContext="hunting"; state.step=STEPS.RESULT; render(); })
+      )
+    )
+  );
+}
+
+function renderBringIntoVA() {
+  return div("", progress(70), breadcrumb(["Covered firearm", ageLabel(), timingLabel(), "Bring into VA"]),
+    makeCard("Step 5 of 6 — Bring Into Virginia", "Which scenario applies?", null,
+      div("options-grid",
+        optBtn("Virginia resident returning with their own grandfathered firearm", "Owned before July 1, 2026; temporarily taken out of state", () => { pushHistory(); state.recipient="own_grandfathered"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Virginia resident purchasing a new firearm out of state to bring home", "Bought after July 1, 2026 outside Virginia", () => { pushHistory(); state.recipient="post_purchase"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Non-Virginia resident visiting with their own firearm", "Temporary visitor bringing their own lawfully owned firearm", () => { pushHistory(); state.recipient="nonresident"; state.step=STEPS.RESULT; render(); })
+      )
+    )
+  );
+}
+
+function renderMag() {
+  return div("", progress(70), breadcrumb(["Covered firearm", ageLabel(), timingLabel(), "Magazine"]),
+    makeCard("Step 5 of 6 — Magazine Action", "What is the intended action with the high-capacity magazine (capacity greater than 15 rounds)?", null,
+      div("options-grid",
+        optBtn("Keep (already owned before July 1, 2026)", "Retain a grandfathered magazine for personal use", () => { pushHistory(); state.magAction="keep"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Sell, trade, or transfer to another person", "Transfer ownership to any other person", () => { pushHistory(); state.magAction="sell_transfer"; state.step=STEPS.RESULT; render(); }),
+        optBtn("Gift to an immediate family member", "Give as a gift to spouse, child, parent, grandparent, or sibling", () => { pushHistory(); state.magAction="family_gift"; state.step=STEPS.RESULT; render(); })
+      )
+    )
+  );
+}
+
+function renderResult() {
+  if (state.action === "__not_covered") return renderResultCard(RULES["not_covered"]);
+  const ruleId = resolveRule({ action:state.action, timing:state.timing, age:state.age, recipient:state.recipient, transportContext:state.transportContext, magAction:state.magAction });
+  return renderResultCard(RULES[ruleId] || RULES["not_covered"]);
+}
+
+function renderResultCard(rule) {
+  const badgeMap = { Permitted:"badge-Permitted", Prohibited:"badge-Prohibited", Conditional:"badge-Conditional", Unsettled:"badge-Unsettled" };
+  const statusText = rule.status === "Unsettled" ? "Unsettled — Verify" : rule.status;
+  const badge = el("span", {className:"badge " + badgeMap[rule.status]}, statusText);
+
+  const authoritySection = div("result-section",
+    div("result-label", "Governing Authority"),
+    p("authority-text", rule.authority)
+  );
+
+  const explSection = div("result-section",
+    div("result-label", "Analysis"),
+    p("explanation-text", rule.explanation)
+  );
+
+  const sections = [badge, authoritySection, explSection];
+
+  if (rule.uncertainty) {
+    const uf = div("uncertainty-flag");
+    uf.innerHTML = "<strong>Uncertainty:</strong> " + rule.uncertainty;
+    sections.push(uf);
+  }
+
+  if (rule.openQuestions && rule.openQuestions.length > 0) {
+    const oqDiv = div("open-questions");
+    oqDiv.appendChild(div("oq-title", "Open Legal Questions Bearing on This Answer"));
+    const oqList = el("ul");
+    rule.openQuestions.forEach(q => {
+      const li = document.createElement("li");
+      const match = q.match(/^(OQ\d+)/);
+      if (match) {
+        li.setAttribute("data-ref", "[" + match[1] + "]");
+        li.textContent = q.replace(/^OQ\d+\s*[–\-]\s*/, "");
+      } else {
+        li.textContent = q;
+      }
+      oqList.appendChild(li);
+    });
+    oqDiv.appendChild(oqList);
+    sections.push(oqDiv);
+  }
+
+  const footnote = div("result-footnote");
+  footnote.innerHTML = "This result reflects the law as written, assuming full effect as of July 1, 2026. Enforcement of the assault firearm ban is currently blocked for Virginia State Police and six named Commonwealth’s Attorneys by preliminary injunctions in <em>Crump v. Katz</em> and <em>Santolla v. Katz</em>. Virginia AG Jones asserts the ban remains in effect in other jurisdictions. A federal Second Amendment challenge (<em>United States v. Virginia</em>) was filed July 1. U.S. Supreme Court cert was granted June 30 in consolidated assault weapons cases; decision expected spring 2027. This is informational only and not legal advice.";
+
+  const restartBtn = el("button", {className:"restart-btn", onclick:resetState}, "Start Over");
+
+  const bcItems = ["Covered firearm"];
+  if (state.age) bcItems.push(ageLabel());
+  if (state.timing) bcItems.push(timingLabel());
+  if (state.action && state.action !== "__not_covered") bcItems.push(actionLabel());
+
+  return div("",
+    progress(100),
+    bcItems.length > 1 ? breadcrumb(bcItems) : null,
+    div("result-card", h2("Determination"), ...sections, footnote, restartBtn)
+  );
+}
+
+// Label helpers
+function ageLabel()    { return state.age==="under18"?"Under 18":state.age==="1820"?"Age 18-20":"Age 21+"; }
+function timingLabel() { return state.timing==="pre"?"Grandfathered (pre-7/1/2026)":"Post-7/1/2026"; }
+function actionLabel() {
+  const m = { keep:"Keep & Use", gift:"Gift", sell:"Sell", inherit:"Inherit", bequeath:"Bequeath", transport:"Transport", outofstate:"Out of State", bring_into_va:"Bring into VA", mag_transfer:"Magazine", surrender:"Surrender", bequeath_or_inherit:"Inherit/Bequeath" };
+  return m[state.action] || state.action;
+}
+
+// =============================================================================
+// MAIN RENDER
+// =============================================================================
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  let content;
+  switch (state.step) {
+    case STEPS.MODEL_LOOKUP: content = renderModelLookup(); break;
+    case STEPS.PRESCREEN:    content = renderPrescreen();   break;
+    case STEPS.AGE:          content = renderAge();         break;
+    case STEPS.TIMING:       content = renderTiming();      break;
+    case STEPS.ACTION:       content = renderAction();      break;
+    case STEPS.RECIPIENT:    content = renderRecipient();   break;
+    case STEPS.TRANSPORT:    content = renderTransport();   break;
+    case STEPS.BRING_VA:     content = renderBringIntoVA(); break;
+    case STEPS.MAG:          content = renderMag();         break;
+    case STEPS.RESULT:       content = renderResult();      break;
+    default:                 content = renderModelLookup();
+  }
+
+  if (content) app.appendChild(content);
+
+  const noBack = [STEPS.MODEL_LOOKUP];
+  if (state.history.length > 0 && !noBack.includes(state.step)) {
+    const backBtn = el("button", {className:"restart-btn", onclick:goBack, style:"margin-bottom:12px;"}, "← Back");
+    app.insertBefore(backBtn, app.firstChild);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
